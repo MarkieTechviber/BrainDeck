@@ -28,7 +28,7 @@ All powered by your choice of AI: use free **Ollama locally**, or switch between
 
 ## Features at a Glance
 
-![Feature Overview](https://via.placeholder.com/1200x300?text=Feature+Overview+Screenshot)
+![Feature Overview](screenshots/features.png)
 
 ## Quick Start
 
@@ -47,17 +47,17 @@ npm run dev            # http://localhost:3000
 ### Step 1: Upload Your Content
 Drop a PDF, Word doc, PowerPoint, Markdown file, or paste a URL on the home page.
 
-![Upload Interface](https://via.placeholder.com/800x400?text=Upload+Interface)
+![Upload Interface](screenshots/upload.png)
 
 ### Step 2: Choose Your Study Format
 Select **Flashcards** (interactive flip cards), **Summary** (key concepts), or **Quiz** (multiple choice). Pick your AI provider and Hit generate.
 
-![Study Options](https://via.placeholder.com/800x400?text=Study+Format+Selection)
+![Study Options](screenshots/study-options.png)
 
 ### Step 3: Study Smart
 Use spaced repetition, track your streak, share with friends, or export to Anki.
 
-![Study Dashboard](https://via.placeholder.com/800x400?text=Study+Experience)
+![Study Dashboard](screenshots/dashboard.png)
 
 ## Database Setup (XAMPP)
 
