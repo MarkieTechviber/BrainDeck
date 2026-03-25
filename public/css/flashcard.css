@@ -1,0 +1,131 @@
+/* ── Flashcard flip ── */
+.bd-flip-scene {
+  width: 100%; max-width: 640px; height: 340px;
+  perspective: 1400px; cursor: pointer; margin: 0 auto;
+}
+.bd-flip-card {
+  width: 100%; height: 100%; position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.4,0.2,0.2,1);
+}
+.bd-flip-card.flipped { transform: rotateY(180deg); }
+.bd-flip-face {
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-xl);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 2.5rem;
+}
+.bd-flip-front {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--neu-shadow), 0 8px 32px rgba(108,99,255,0.1);
+}
+.bd-flip-back {
+  background: var(--grad-primary);
+  box-shadow: 6px 6px 20px rgba(108,99,255,0.5), -4px -4px 12px rgba(255,255,255,0.3);
+  transform: rotateY(180deg);
+}
+.bd-flip-label {
+  position: absolute; top: 1.1rem; left: 1.5rem;
+  font-size: .7rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; opacity: .5;
+}
+.bd-flip-hint {
+  position: absolute; bottom: 1rem; right: 1.5rem;
+  font-size: .7rem; opacity: .45;
+}
+.bd-flip-content {
+  text-align: center; font-size: 1.1rem; line-height: 1.65;
+  color: var(--text); max-width: 100%; overflow-y: auto;
+}
+.bd-flip-back .bd-flip-content { color: rgba(255,255,255,.95); }
+.bd-flip-back .bd-flip-label   { color: rgba(255,255,255,.6); }
+.bd-flip-back .bd-flip-hint    { color: rgba(255,255,255,.5); }
+.bd-progress-section { max-width: 640px; margin: 0 auto; }
+.bd-rating-btn { border-radius: var(--radius); font-weight: 600; transition: var(--transition); }
+.bd-rating-btn:hover:not(:disabled) { transform: translateY(-2px); }
+@media (max-width:768px) { .bd-flip-scene { height: 280px; } }
+
+/* ── Swipe gestures ── */
+.bd-flip-scene {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.bd-flip-card {
+  will-change: transform;
+}
+
+/* Swipe indicator pills — shown at bottom on mobile */
+.bd-swipe-indicators {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  padding: .6rem 0 .2rem;
+  max-width: 640px;
+  margin: 0 auto;
+}
+@media (max-width: 768px) {
+  .bd-swipe-indicators { display: flex; }
+  .bd-flip-scene { cursor: grab; }
+  .bd-flip-scene:active { cursor: grabbing; }
+}
+
+.bd-swipe-pill {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  opacity: .5;
+  transition: opacity .2s;
+}
+.bd-swipe-pill.active { opacity: 1; }
+.bd-swipe-pill-left  { color: var(--danger); }
+.bd-swipe-pill-up    { color: var(--primary); }
+.bd-swipe-pill-right { color: var(--success); }
+
+/* Card enters from side after swipe */
+@keyframes cardEnterRight {
+  from { transform: translateX(-120px); opacity: 0; }
+  to   { transform: translateX(0);      opacity: 1; }
+}
+@keyframes cardEnterLeft {
+  from { transform: translateX(120px);  opacity: 0; }
+  to   { transform: translateX(0);      opacity: 1; }
+}
+
+/* ── Study mode ── */
+@keyframes pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.04); box-shadow: 0 0 0 4px rgba(108,99,255,.2); }
+  100% { transform: scale(1); }
+}
+
+/* Learn mode hint */
+#studyModeHint {
+  transition: opacity .3s ease;
+}
+
+/* Timer countdown color shifts */
+#studyModeTimer {
+  font-variant-numeric: tabular-nums;
+  transition: color .3s ease;
+  font-size: .9rem;
+}
+
+/* Test mode — card border turns red when locked */
+body.mode-test .bd-flip-front {
+  border-color: rgba(248,113,113,0.3);
+}
+body.mode-learn .bd-flip-front {
+  border-color: rgba(52,211,153,0.25);
+}
+body.mode-timed .bd-flip-front {
+  border-color: rgba(251,191,36,0.3);
+}

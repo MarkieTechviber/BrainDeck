@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>BrainDeck — Signing you in...</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link href="css/_variables.css" rel="stylesheet">
+  <style>
+    body { background: var(--bg); display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: var(--font); }
+    .box { text-align: center; }
+    .spinner { width: 48px; height: 48px; border: 4px solid rgba(108,99,255,0.15); border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 1.5rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    p { color: var(--text-muted); font-size: .95rem; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="spinner"></div>
+    <p>Signing you in with Google...</p>
+  </div>
+  <script src="js/theme.js"></script>
+  <script>
+    // Pick up token from URL query param
+    const params = new URLSearchParams(window.location.search);
+    const token  = params.get('token');
+    const error  = params.get('error');
+
+    if (error) {
+      window.location.href = '/login.html?error=' + error;
+    } else if (token) {
+      // Store access token same way as normal login
+      localStorage.setItem('bd_access_token', token);
+      // Clean URL and redirect to home
+      window.location.href = '/';
+    } else {
+      window.location.href = '/login.html?error=no_token';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <rect width="390" height="844" fill="#e8edf5"/>
+  <rect x="20" y="80" width="350" height="684" rx="16" fill="white" stroke="#c5cad6" stroke-width="1"/>
+  <text x="195" y="440" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#6c63ff" font-weight="bold">BrainDeck</text>
+  <text x="195" y="470" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#7b82a3">AI-powered study cards</text>
+</svg>

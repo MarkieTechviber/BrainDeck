@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#6c63ff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1f2e" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BrainDeck">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="BrainDeck">
+  <meta name="msapplication-TileColor" content="#6c63ff">
+  <meta name="msapplication-TileImage" content="/icons/icon-144x144.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BrainDeck — Quiz</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/_variables.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/sidebar.css" rel="stylesheet">
+  <link href="css/quiz.css" rel="stylesheet">
+  <link href="/css/card-editor.css" rel="stylesheet">
+  <meta property="og:title" content="BrainDeck — Quiz">
+  <meta property="og:description" content="Turn any PDF, DOCX, PPTX, or TXT into flashcards, summaries, or quizzes instantly using AI.">
+  <meta name="description" content="BrainDeck — AI-powered study cards from your documents. Free, fast, no account needed.">
+</head>
+<body class="bd-body">
+<div class="bd-layout">
+  <aside class="bd-sidebar" id="bdSidebar">
+    <div class="bd-sidebar-header">
+      <a href="/" class="bd-sidebar-logo">
+        <i class="bi bi-journals bd-sidebar-logo-icon"></i>
+        <span class="bd-sidebar-logo-text">BrainDeck</span>
+      </a>
+      <button class="bd-sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">
+        <i class="bi bi-layout-sidebar-reverse"></i>
+      </button>
+    </div>
+    <div class="bd-sidebar-user">
+      <div class="bd-sidebar-avatar" id="sidebarAvatar">?</div>
+      <div class="bd-sidebar-user-info">
+        <div class="bd-sidebar-user-name" id="sidebarName">Loading...</div>
+        <div class="bd-sidebar-user-role" id="sidebarRole">—</div>
+      </div>
+    </div>
+    <nav class="bd-sidebar-nav">
+      <div class="bd-sidebar-section-label">Main</div>
+      <a href="/index.html" class="bd-nav-item" data-page="index.html">
+        <i class="bi bi-house-fill"></i><span class="bd-nav-label">Home</span>
+      </a>
+      <a href="/dashboard.html" class="bd-nav-item" data-page="dashboard.html">
+        <i class="bi bi-grid-fill"></i><span class="bd-nav-label">Dashboard</span>
+      </a>
+      <a href="/decks.html" class="bd-nav-item" data-page="decks.html">
+        <i class="bi bi-collection-fill"></i><span class="bd-nav-label">My Decks</span>
+      </a>
+      <div class="bd-sidebar-section-label">Study</div>
+      <a href="/flashcard.html" class="bd-nav-item" data-page="flashcard.html">
+        <i class="bi bi-card-text"></i><span class="bd-nav-label">Flashcards</span>
+      </a>
+      <a href="/summary.html" class="bd-nav-item" data-page="summary.html">
+        <i class="bi bi-list-ul"></i><span class="bd-nav-label">Summary</span>
+      </a>
+      <a href="/quiz.html" class="bd-nav-item active" data-page="quiz.html">
+        <i class="bi bi-patch-question-fill"></i><span class="bd-nav-label">Quiz</span>
+      </a>
+      <div id="sidebarAuthSection" class="d-none">
+        <div class="bd-sidebar-section-label">Account</div>
+        <a href="/profile.html" class="bd-nav-item" data-page="profile.html"><i class="bi bi-person-fill"></i><span class="bd-nav-label">Profile</span></a>
+        <button class="bd-nav-item" id="sidebarLogout" style="color:var(--danger)"><i class="bi bi-box-arrow-right"></i><span class="bd-nav-label">Log Out</span></button>
+      </div>
+      <div id="sidebarGuestSection">
+        <div class="bd-sidebar-section-label">Account</div>
+        <a href="/login.html" class="bd-nav-item"><i class="bi bi-box-arrow-in-right"></i><span class="bd-nav-label">Log In</span></a>
+        <a href="/register.html" class="bd-nav-item" style="color:var(--primary)"><i class="bi bi-person-plus-fill"></i><span class="bd-nav-label">Sign Up Free</span></a>
+      </div>
+    </nav>
+    <div class="bd-sidebar-footer">
+      <button class="bd-nav-item" onclick="Theme.toggle()"><i class="bd-theme-icon bi bi-moon-fill"></i><span class="bd-nav-label">Dark mode</span></button>
+      <button class="bd-nav-item" onclick="Shortcuts.show()"><i class="bi bi-keyboard"></i><span class="bd-nav-label">Shortcuts</span></button>
+      <button class="bd-nav-item" onclick="Pomodoro.toggle()"><i class="bi bi-stopwatch"></i><span class="bd-nav-label">Pomodoro</span></button>
+    </div>
+  </aside>
+  <div class="bd-sidebar-overlay" id="bdSidebarOverlay"></div>
+  <div class="bd-main" id="bdMain">
+        <!-- ── GUEST navbar (only shown when NOT logged in) ── -->
+    <nav class="bd-guest-nav d-none" id="bdGuestNav">
+      <a href="/" class="bd-brand">
+        <i class="bi bi-journals bd-brand-icon"></i>
+        <span class="bd-brand-text">BrainDeck</span>
+      </a>
+      <div class="bd-guest-actions">
+        <button class="btn-neu px-2 py-2 rounded-3" onclick="Theme.toggle()" title="Dark mode">
+          <i class="bd-theme-icon bi bi-moon-fill" style="color:var(--text-muted);font-size:.9rem"></i>
+        </button>
+        <a href="/login.html" class="btn-neu px-3 py-2 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Log In
+        </a>
+        <a href="/register.html" class="btn-primary-neu px-3 py-2 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600">
+          <i class="bi bi-person-plus me-1"></i>Sign Up
+        </a>
+      </div>
+    </nav>
+
+    <!-- ── AUTH top bar ── -->
+    <header class="bd-topbar">
+      <div class="bd-topbar-left">
+        <button class="btn-neu px-2 py-2 rounded-3 d-md-none" id="sidebarMobileBtn"><i class="bi bi-list" style="font-size:1.1rem;color:var(--text-muted)"></i></button>
+        <span class="fw-600 bd-font-sm d-none d-md-block" style="color:var(--text-muted)"><i class="bi bi-patch-question-fill me-1"></i>Quiz</span>
+        <div class="d-flex gap-1 ms-2">
+          <a href="/flashcard.html" class="btn-neu px-2 py-1 rounded-3 bd-font-xs text-decoration-none" style="font-weight:600">Flashcards</a>
+          <a href="/summary.html" class="btn-neu px-2 py-1 rounded-3 bd-font-xs text-decoration-none" style="font-weight:600">Summary</a>
+        </div>
+      </div>
+      <div class="bd-topbar-right">
+        <div id="aiModeSwitcher"></div>
+        <div class="dropdown">
+          <button class="btn-neu px-2 py-1 rounded-3 d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown" style="border:none;font-size:.85rem;font-weight:600">
+            <div id="topbarAvatar" style="width:28px;height:28px;border-radius:50%;background:var(--grad-primary);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.7rem;flex-shrink:0">?</div>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end rounded-3 border-0 mt-1" style="background:var(--surface);box-shadow:var(--neu-shadow)!important;min-width:160px">
+            <li><a class="dropdown-item bd-font-sm" href="/profile.html" style="color:var(--text);padding:.4rem .75rem"><i class="bi bi-person me-2" style="color:var(--primary)"></i>Profile</a></li>
+            <li><a class="dropdown-item bd-font-sm" href="/decks.html" style="color:var(--text);padding:.4rem .75rem"><i class="bi bi-collection me-2" style="color:var(--primary)"></i>My Decks</a></li>
+            <li><hr class="dropdown-divider" style="border-color:rgba(108,99,255,0.1)"></li>
+            <li><button class="dropdown-item bd-font-sm" id="topbarLogout" style="color:var(--danger);padding:.4rem .75rem;background:none;border:none;width:100%;text-align:left"><i class="bi bi-box-arrow-right me-2"></i>Log Out</button></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+<div class="bd-quiz-scorebar" id="scoreBar"><div class="container d-flex justify-content-between align-items-center py-1">
+    <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="/"><i class="bi bi-journals" style="color:var(--primary);font-size:1.3rem"></i><span class="bd-brand-text">BrainDeck</span></a>
+    <div class="d-flex align-items-center gap-2">
+      <span class="bd-text-muted bd-font-sm fw-600">Q <span id="currentQ">1</span>/<span id="totalQ">0</span></span>
+      <span class="px-3 py-1 rounded-pill bd-font-xs fw-600" style="background:rgba(52,211,153,0.15);color:var(--success);border:1px solid rgba(52,211,153,0.3)"><i class="bi bi-check-lg me-1"></i><span id="scoreCorrect">0</span> correct</span>
+      <div id="aiModeSwitcher"></div>
+      <button class="btn-neu px-2 py-2 rounded-3" onclick="Theme.toggle()" title="Toggle dark mode (D)"><i class="bd-theme-icon bi bi-moon-fill" style="color:var(--text-muted);font-size:.9rem"></i></button>
+      <button class="btn-neu px-2 py-2 rounded-3 bd-tts-btn" onclick="TTS.toggle()" title="Text-to-speech (T)"><i class="bi bi-volume-up" style="color:var(--text-muted);font-size:.9rem"></i></button>
+      <button class="btn-neu px-2 py-2 rounded-3" onclick="Pomodoro.toggle()" title="Pomodoro timer (P)"><i class="bi bi-stopwatch" style="color:var(--text-muted);font-size:.9rem"></i></button>
+      <button class="btn-neu px-2 py-2 rounded-3" onclick="Shortcuts.show()" title="Keyboard shortcuts (?)"><i class="bi bi-keyboard" style="color:var(--text-muted);font-size:.9rem"></i></button>
+      <a href="flashcard.html" class="btn-neu px-3 py-2 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600"><i class="bi bi-card-text me-1"></i>Flashcards</a>
+      <a href="summary.html" class="btn-neu px-3 py-2 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600"><i class="bi bi-list-ul me-1"></i>Summary</a>
+      <span class="btn-primary-neu px-3 py-2 rounded-3 bd-font-sm fw-600" style="pointer-events:none"><i class="bi bi-patch-question me-1"></i>Quiz</span>
+    </div>
+  </div>
+</div>
+
+<main class="py-4 z-1">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-9">
+
+        <div class="mb-4">
+          <div class="bd-progress-wrap"><div class="bd-progress-fill" id="progressBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="glass-card p-4 mb-4" id="questionCard">
+          <p class="bd-text-muted bd-font-sm fw-600 mb-2"><i class="bi bi-patch-question me-1" style="color:var(--primary)"></i>Question <span id="questionNum">1</span></p>
+          <h5 class="fw-700 mb-4" style="color:var(--text)" id="questionText">Loading question...</h5>
+          <div class="d-flex flex-column gap-3" id="optionsList"></div>
+          <div class="bd-explanation mt-4 d-none" id="explanation">
+            <strong><i class="bi bi-lightbulb-fill me-2" style="color:var(--primary)"></i>Explanation:</strong>
+            <span id="explanationText"></span>
+          </div>
+          <div class="d-grid mt-4 d-none" id="nextBtnWrapper">
+            <button class="btn-primary-neu py-2 fw-600 rounded-3" id="nextQuestionBtn">Next Question<i class="bi bi-chevron-right ms-1"></i></button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="d-none" id="finalScore">
+  <main class="py-5 z-1">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 text-center">
+          <div class="glass-card p-5">
+            <div id="quizTrophy" style="font-size:4rem;margin-bottom:.5rem;animation:trophydrop .5s cubic-bezier(.175,.885,.32,1.275) both">🏆</div>
+            <style>
+              @keyframes trophydrop {
+                from { opacity:0;transform:scale(.3) translateY(-20px); }
+                to   { opacity:1;transform:scale(1)  translateY(0); }
+              }
+              @keyframes quizpulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+              #quizTrophy.pulse { animation:quizpulse .6s ease-in-out 3; }
+            </style>
+            <div class="bd-score-circle mb-3">
+              <span class="bd-score-pct" id="finalPct">0%</span>
+              <span class="bd-score-lbl">Score</span>
+            </div>
+            <h4 class="fw-800 mb-1" style="color:var(--text)" id="scoreBadgeText">Good work!</h4>
+            <p class="bd-text-muted mb-3">You got <strong id="finalCorrect">0</strong> out of <strong id="finalTotal">0</strong> correct.</p>
+            <!-- Score bar -->
+            <div style="background:var(--bg);border-radius:30px;box-shadow:var(--neu-inset);height:10px;margin:.25rem auto 1.25rem;max-width:280px;overflow:hidden">
+              <div id="quizScoreBar" style="height:100%;border-radius:30px;background:var(--grad-primary);width:0%;transition:width 1s cubic-bezier(.4,0,.2,1) .4s"></div>
+            </div>
+            <div class="d-flex gap-3 flex-wrap justify-content-center">
+              <button class="btn-neu px-4 py-2 rounded-3 fw-600" id="retryBtn"><i class="bi bi-arrow-counterclockwise me-1"></i>Retry Quiz</button>
+              <a href="flashcard.html" class="btn-neu px-4 py-2 rounded-3 fw-600 text-decoration-none"><i class="bi bi-card-text me-1"></i>Flashcards</a>
+              <a href="/" class="btn-neu px-4 py-2 rounded-3 fw-600 text-decoration-none"><i class="bi bi-cloud-upload me-1"></i>New Document</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 p-2 text-center" style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border) !important;">
+      <div class="modal-body py-5">
+        <div class="bd-spinner mx-auto mb-4"></div>
+        <h5 class="fw-bold mb-2" style="color:var(--text)">Generating quiz questions...</h5>
+        <p class="bd-text-muted mb-0">AI is crafting your quiz.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="noSessionModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 p-3 text-center" style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border) !important;">
+      <div class="modal-body py-4">
+        <i class="bi bi-exclamation-circle-fill fs-1 mb-3 d-block" style="color:var(--warning)"></i>
+        <h5 class="fw-bold mb-2" style="color:var(--text)">No study session found</h5>
+        <p class="bd-text-muted mb-4">Upload a document to start studying.</p>
+        <a href="/" class="btn-primary-neu px-5 py-2 rounded-3 fw-600 text-decoration-none"><i class="bi bi-cloud-upload me-2"></i>Upload Document</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/theme.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/aimode.js"></script>
+<script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/shortcuts.js"></script>
+  <script src="js/tts.js"></script>
+  <script src="js/pomodoro.js"></script>
+  <script src="js/spaced-rep.js"></script>
+  <script src="js/streaks.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/sharing.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/urlimport.js"></script>
+<script src="/js/confetti.js"></script>
+<script src="/js/chapters.js"></script>
+<script src="js/quiz.js"></script>
+  </div>
+</div>
+<script>
+  document.getElementById('sidebarLogout')?.addEventListener('click', () => BrainDeckAuth.logout());
+  document.getElementById('topbarLogout')?.addEventListener('click',  () => BrainDeckAuth.logout());
+  (async () => {
+    let user = BrainDeckAuth.getToken() ? await BrainDeckAuth.getCurrentUser() : null;
+    if (!user) user = await BrainDeckAuth.tryRefresh();
+    if (user) {
+      const initials = (user.name||user.email||'?').slice(0,2).toUpperCase();
+      const html = user.avatarUrl ? `<img src="${user.avatarUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">` : initials;
+      const ta = document.getElementById('topbarAvatar');
+      if(ta) ta.innerHTML = html;
+    }
+  })();
+</script>
+  <script src="/js/email-verify-banner.js"></script>
+  <script src="/js/push-notifications.js"></script>
+  <script src="/js/notification-settings.js"></script>
+  <script src="/js/pwa.js"></script>
+  <script src="/js/card-editor.js"></script>
+<script>
+// ── Card editor integration ──
+document.addEventListener('DOMContentLoaded', () => {
+  const raw = localStorage.getItem('bd_session');
+  if (!raw || typeof CardEditor === 'undefined') return;
+
+  const session = JSON.parse(raw);
+  const cards   = session.cards || [];
+  const type    = session.cardType || 'quiz';
+
+  CardEditor.injectTriggerBtn(() => {
+    CardEditor.open(cards, type, (updatedCards) => {
+      // Reload the page so the study session uses the new cards
+      window.location.reload();
+    });
+  });
+});
+</script>
+<script>
+// ── Show difficulty badge ──
+document.addEventListener('DOMContentLoaded', () => {
+  const raw = localStorage.getItem('bd_session');
+  if (!raw) return;
+  const session = JSON.parse(raw);
+  const diff = session.difficulty;
+  if (!diff || diff === 'medium') return;
+
+  const badges = { easy:'🌱 Easy', medium:'📚 Medium', hard:'🔥 Hard', expert:'⚡ Expert' };
+  const colors = { easy:'var(--success)', medium:'var(--primary)', hard:'var(--warning)', expert:'var(--danger)' };
+
+  const badge = document.createElement('span');
+  badge.style.cssText = `
+    display:inline-flex;align-items:center;gap:.3rem;
+    background:rgba(108,99,255,.1);border-radius:20px;
+    padding:.2rem .7rem;font-size:.72rem;font-weight:700;
+    color:${colors[diff]||'var(--primary)'};margin-left:.5rem;
+    border:.5px solid ${colors[diff]||'var(--primary)'}40;
+  `;
+  badge.textContent = badges[diff] || diff;
+
+  const topbarLeft = document.querySelector('.bd-topbar-left');
+  if (topbarLeft) topbarLeft.appendChild(badge);
+});
+</script>
+</body>
+</html>

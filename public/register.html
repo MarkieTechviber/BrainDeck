@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#6c63ff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1f2e" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BrainDeck">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="BrainDeck">
+  <meta name="msapplication-TileColor" content="#6c63ff">
+  <meta name="msapplication-TileImage" content="/icons/icon-144x144.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BrainDeck — Create Account</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/_variables.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/auth.css" rel="stylesheet">
+  <meta property="og:title" content="BrainDeck — Create Account">
+  <meta property="og:description" content="Turn any PDF, DOCX, PPTX, or TXT into flashcards, summaries, or quizzes instantly using AI.">
+  <meta name="description" content="BrainDeck — AI-powered study cards from your documents. Free, fast, no account needed.">
+</head>
+<body class="bd-body">
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo"><i class="bi bi-journals text-white"></i></div>
+    <h1 class="auth-title">Create account</h1>
+    <p class="auth-subtitle">Start studying smarter today — it's free</p>
+
+    <div class="alert bd-alert-glass d-none mt-3 py-2 px-3 bd-font-sm" id="errorAlert" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i><span id="errorMsg"></span>
+    </div>
+
+    <div class="mt-4">
+      
+        <!-- Google OAuth -->
+        <div class="text-center mb-3">
+          <a href="/api/auth/google"
+             style="display:inline-flex;align-items:center;justify-content:center;gap:.65rem;
+                    width:100%;padding:.7rem 1.5rem;border-radius:var(--radius);
+                    background:var(--surface);box-shadow:var(--neu-shadow-sm);
+                    color:var(--text);font-weight:600;font-size:.9rem;
+                    text-decoration:none;border:1px solid rgba(108,99,255,0.15);
+                    transition:var(--transition)"
+             onmouseover="this.style.boxShadow='var(--neu-hover)';this.style.transform='translateY(-1px)'"
+             onmouseout="this.style.boxShadow='var(--neu-shadow-sm)';this.style.transform=''">
+            <svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+              <path fill="none" d="M0 0h48v48H0z"/>
+            </svg>
+            Continue with Google
+          </a>
+        </div>
+
+        <!-- Divider -->
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem">
+          <div style="flex:1;height:.5px;background:rgba(108,99,255,0.15)"></div>
+          <span style="font-size:.78rem;color:var(--text-muted);font-weight:500">or continue with email</span>
+          <div style="flex:1;height:.5px;background:rgba(108,99,255,0.15)"></div>
+        </div>
+        <div class="mb-3">
+        <label class="neu-label">Full name</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-person input-icon"></i>
+          <input type="text" id="nameInput" class="neu-input" placeholder="Your name" autocomplete="name">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="neu-label">Email address</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-envelope input-icon"></i>
+          <input type="email" id="emailInput" class="neu-input" placeholder="you@example.com" autocomplete="email">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="neu-label">Password</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-lock input-icon"></i>
+          <input type="password" id="passwordInput" class="neu-input" placeholder="Min. 8 characters" autocomplete="new-password">
+          <button class="input-eye" id="togglePwd" type="button"><i class="bi bi-eye" id="eyeIcon"></i></button>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="neu-label">Confirm password</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-lock-fill input-icon"></i>
+          <input type="password" id="confirmInput" class="neu-input" placeholder="Repeat password" autocomplete="new-password">
+        </div>
+      </div>
+      <button class="btn-primary-neu w-100 py-3 rounded-3 fw-bold" id="registerBtn" type="button">
+        <span id="regBtnText"><i class="bi bi-person-plus me-2"></i>Create Account</span>
+        <span id="regSpinner" class="d-none"><span class="spinner-border spinner-border-sm me-2"></span>Creating...</span>
+      </button>
+    </div>
+
+    <p class="text-center mt-4 bd-font-sm bd-text-muted">
+      Already have an account? <a href="login.html" class="auth-link">Log in</a>
+    </p>
+    <p class="text-center bd-font-xs bd-text-muted" style="margin-top:.5rem">
+      By signing up you agree to our <a href="#" class="auth-link">Terms</a> and <a href="#" class="auth-link">Privacy Policy</a>
+    </p>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/auth.js"></script>
+<script>
+document.getElementById('togglePwd').addEventListener('click', function() {
+  const inp = document.getElementById('passwordInput');
+  const ico = document.getElementById('eyeIcon');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  ico.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+});
+document.getElementById('registerBtn').addEventListener('click', () => BrainDeckAuth.register());
+</script>
+  <script src="/js/pwa.js"></script>
+</body>
+</html>

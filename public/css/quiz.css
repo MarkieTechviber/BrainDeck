@@ -1,0 +1,41 @@
+.bd-quiz-option {
+  background: var(--surface);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  box-shadow: var(--neu-shadow-sm);
+  padding: 1rem 1.25rem;
+  cursor: pointer; transition: var(--transition);
+  text-align: left; width: 100%;
+  font-size: 1rem; color: var(--text);
+  display: flex; align-items: center; gap: .75rem;
+}
+.bd-quiz-option:hover:not(:disabled) { box-shadow: var(--neu-hover); transform: translateX(3px); border-color: rgba(108,99,255,0.3); }
+.bd-quiz-option:disabled { cursor: default; }
+.bd-quiz-option.correct { border-color: var(--success); background: rgba(52,211,153,0.1); box-shadow: 0 0 0 2px rgba(52,211,153,0.25); color: #065f46; }
+.bd-quiz-option.wrong   { border-color: var(--danger);  background: rgba(248,113,113,0.1); box-shadow: 0 0 0 2px rgba(248,113,113,0.25); color: #991b1b; }
+.bd-option-label {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--surface); box-shadow: var(--neu-shadow-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: .85rem; flex-shrink: 0; transition: var(--transition);
+}
+.bd-quiz-option.correct .bd-option-label { background: var(--grad-success); color: #fff; box-shadow: none; }
+.bd-quiz-option.wrong   .bd-option-label { background: var(--grad-danger);  color: #fff; box-shadow: none; }
+.bd-quiz-scorebar {
+  background: var(--glass-bg); backdrop-filter: var(--glass-blur-sm);
+  border-bottom: 1px solid var(--glass-border); padding: .6rem 0;
+}
+.bd-explanation {
+  background: rgba(108,99,255,0.07); border-left: 3px solid var(--primary);
+  border-radius: 0 var(--radius) var(--radius) 0; padding: 1rem 1.25rem;
+  font-size: .94rem; color: var(--text-muted);
+}
+.bd-score-circle {
+  width: 130px; height: 130px; border-radius: 50%;
+  background: var(--grad-primary);
+  box-shadow: 8px 8px 20px rgba(108,99,255,0.45), -4px -4px 12px rgba(255,255,255,0.6);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin: 0 auto; color: #fff;
+}
+.bd-score-pct { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+.bd-score-lbl { font-size: .7rem; opacity: .85; text-transform: uppercase; letter-spacing: .06em; }

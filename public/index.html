@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#6c63ff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1f2e" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BrainDeck">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="BrainDeck">
+  <meta name="msapplication-TileColor" content="#6c63ff">
+  <meta name="msapplication-TileImage" content="/icons/icon-144x144.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BrainDeck — Turn Any Document into Study Cards</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/_variables.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/sidebar.css" rel="stylesheet">
+  <link href="/css/card-editor.css" rel="stylesheet">
+  <meta property="og:title" content="BrainDeck — Turn Any Document into Study Cards">
+  <meta name="description" content="BrainDeck — AI-powered study cards from your documents.">
+</head>
+<body class="bd-body">
+
+<!-- ══════════ LAYOUT ══════════ -->
+<div class="bd-layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="bd-sidebar" id="bdSidebar">
+
+    <!-- Header -->
+    <div class="bd-sidebar-header">
+      <a href="/" class="bd-sidebar-logo">
+        <i class="bi bi-journals bd-sidebar-logo-icon"></i>
+        <span class="bd-sidebar-logo-text">BrainDeck</span>
+      </a>
+      <button class="bd-sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">
+        <i class="bi bi-layout-sidebar-reverse"></i>
+      </button>
+    </div>
+
+    <!-- User -->
+    <div class="bd-sidebar-user">
+      <div class="bd-sidebar-avatar" id="sidebarAvatar">?</div>
+      <div class="bd-sidebar-user-info">
+        <div class="bd-sidebar-user-name" id="sidebarName">Loading...</div>
+        <div class="bd-sidebar-user-role" id="sidebarRole">—</div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="bd-sidebar-nav">
+
+      <div class="bd-sidebar-section-label">Main</div>
+      <a href="/" class="bd-nav-item" data-page="index.html">
+        <i class="bi bi-house-fill"></i><span class="bd-nav-label">Home</span>
+      </a>
+      <a href="dashboard.html" class="bd-nav-item" data-page="dashboard.html">
+        <i class="bi bi-grid-fill"></i><span class="bd-nav-label">Dashboard</span>
+      </a>
+      <a href="decks.html" class="bd-nav-item" data-page="decks.html">
+        <i class="bi bi-collection-fill"></i><span class="bd-nav-label">My Decks</span>
+      </a>
+
+      <div class="bd-sidebar-section-label">Study</div>
+      <a href="flashcard.html" class="bd-nav-item" data-page="flashcard.html">
+        <i class="bi bi-card-text"></i><span class="bd-nav-label">Flashcards</span>
+      </a>
+      <a href="summary.html" class="bd-nav-item" data-page="summary.html">
+        <i class="bi bi-list-ul"></i><span class="bd-nav-label">Summary</span>
+      </a>
+      <a href="quiz.html" class="bd-nav-item" data-page="quiz.html">
+        <i class="bi bi-patch-question-fill"></i><span class="bd-nav-label">Quiz</span>
+      </a>
+
+      <!-- Auth section (logged in) -->
+      <div id="sidebarAuthSection" class="d-none">
+        <div class="bd-sidebar-section-label">Account</div>
+        <a href="profile.html" class="bd-nav-item" data-page="profile.html">
+          <i class="bi bi-person-fill"></i><span class="bd-nav-label">Profile</span>
+        </a>
+        <button class="bd-nav-item" id="sidebarLogout" style="color:var(--danger)">
+          <i class="bi bi-box-arrow-right"></i><span class="bd-nav-label">Log Out</span>
+        </button>
+      </div>
+
+      <!-- Guest section (not logged in) -->
+      <div id="sidebarGuestSection">
+        <div class="bd-sidebar-section-label">Account</div>
+        <a href="login.html" class="bd-nav-item" data-page="login.html">
+          <i class="bi bi-box-arrow-in-right"></i><span class="bd-nav-label">Log In</span>
+        </a>
+        <a href="register.html" class="bd-nav-item" data-page="register.html"
+           style="color:var(--primary)">
+          <i class="bi bi-person-plus-fill"></i><span class="bd-nav-label">Sign Up Free</span>
+        </a>
+      </div>
+
+    </nav>
+
+    <!-- Footer -->
+    <div class="bd-sidebar-footer">
+      <button class="bd-nav-item" onclick="Theme.toggle()" title="Toggle dark mode (D)">
+        <i class="bd-theme-icon bi bi-moon-fill"></i><span class="bd-nav-label">Dark mode</span>
+      </button>
+      <button class="bd-nav-item" onclick="Shortcuts.show()" title="Keyboard shortcuts (?)">
+        <i class="bi bi-keyboard"></i><span class="bd-nav-label">Shortcuts</span>
+      </button>
+      <button class="bd-nav-item" onclick="Pomodoro.toggle()" title="Pomodoro timer (P)">
+        <i class="bi bi-stopwatch"></i><span class="bd-nav-label">Pomodoro</span>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- Overlay for mobile -->
+  <div class="bd-sidebar-overlay" id="bdSidebarOverlay"></div>
+
+  <!-- ══ MAIN ══ -->
+  <div class="bd-main" id="bdMain">
+
+    <!-- ── GUEST navbar (only shown when NOT logged in) ── -->
+    <nav class="bd-guest-nav d-none" id="bdGuestNav">
+      <a href="/" class="bd-brand">
+        <i class="bi bi-journals bd-brand-icon"></i>
+        <span class="bd-brand-text">BrainDeck</span>
+      </a>
+      <div class="bd-guest-actions">
+        <div id="aiModeSwitcherGuest"></div>
+        <button class="btn-neu px-2 py-2 rounded-3" onclick="Theme.toggle()" title="Dark mode">
+          <i class="bd-theme-icon bi bi-moon-fill" style="color:var(--text-muted);font-size:.9rem"></i>
+        </button>
+        <a href="login.html" class="btn-neu px-3 py-2 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Log In
+        </a>
+        <a href="register.html" class="btn-primary-neu px-3 py-2 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600">
+          <i class="bi bi-person-plus me-1"></i>Sign Up
+        </a>
+      </div>
+    </nav>
+
+    <!-- ── AUTH top bar (only shown when logged in) ── -->
+    <header class="bd-topbar">
+      <div class="bd-topbar-left">
+        <!-- Mobile hamburger -->
+        <button class="btn-neu px-2 py-2 rounded-3 d-md-none" id="sidebarMobileBtn">
+          <i class="bi bi-list" style="font-size:1.1rem;color:var(--text-muted)"></i>
+        </button>
+        <span class="fw-700 bd-font-sm d-md-none" style="color:var(--text)">BrainDeck</span>
+        <!-- Page title on desktop -->
+        <span class="fw-600 bd-font-sm d-none d-md-block" style="color:var(--text-muted)">
+          <i class="bi bi-house me-1"></i>Home
+        </span>
+      </div>
+      <div class="bd-topbar-right">
+        <div id="aiModeSwitcher"></div>
+        <!-- Auth avatar (top bar, logged in) -->
+        <div class="dropdown" id="topbarUserDropdown">
+          <button class="btn-neu px-2 py-1 rounded-3 d-flex align-items-center gap-2 dropdown-toggle"
+                  data-bs-toggle="dropdown" style="border:none;font-size:.85rem;font-weight:600">
+            <div id="topbarAvatar"
+                 style="width:28px;height:28px;border-radius:50%;background:var(--grad-primary);
+                        display:flex;align-items:center;justify-content:center;
+                        color:#fff;font-weight:700;font-size:.7rem;flex-shrink:0">?</div>
+            <span id="topbarName" class="bd-font-sm d-none d-md-block" style="color:var(--text)">User</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end rounded-3 border-0 mt-1"
+              style="background:var(--surface);box-shadow:var(--neu-shadow)!important;min-width:180px">
+            <li>
+              <div class="px-3 pt-2 pb-1">
+                <div class="bd-font-sm fw-700" id="topbarDropName" style="color:var(--text)">User</div>
+                <div class="bd-font-xs" id="topbarDropEmail" style="color:var(--text-muted)">—</div>
+              </div>
+            </li>
+            <li><hr class="dropdown-divider" style="border-color:rgba(108,99,255,0.1)"></li>
+            <li><a class="dropdown-item rounded-2 bd-font-sm" href="profile.html" style="color:var(--text);padding:.4rem .75rem"><i class="bi bi-person me-2" style="color:var(--primary)"></i>Profile</a></li>
+            <li><a class="dropdown-item rounded-2 bd-font-sm" href="dashboard.html" style="color:var(--text);padding:.4rem .75rem"><i class="bi bi-grid me-2" style="color:var(--primary)"></i>Dashboard</a></li>
+            <li><a class="dropdown-item rounded-2 bd-font-sm" href="decks.html" style="color:var(--text);padding:.4rem .75rem"><i class="bi bi-collection me-2" style="color:var(--primary)"></i>My Decks</a></li>
+            <li><hr class="dropdown-divider" style="border-color:rgba(108,99,255,0.1)"></li>
+            <li><button class="dropdown-item rounded-2 bd-font-sm" id="topbarLogout" style="color:var(--danger);padding:.4rem .75rem;background:none;border:none;width:100%;text-align:left"><i class="bi bi-box-arrow-right me-2"></i>Log Out</button></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- ══ PAGE CONTENT ══ -->
+    <main style="flex:1">
+
+      <!-- Hero -->
+      <section class="bd-hero py-4">
+        <div class="container text-center">
+          <div class="row justify-content-center">
+            <div class="col-lg-8">
+              <span class="bd-badge-glass mb-3 d-inline-block">
+                <i class="bi bi-lightning-charge-fill me-1"></i>Instant Study Cards from Any Document
+              </span>
+              <h1 class="bd-hero-title mb-3">Transform Documents into<br>
+                <span style="background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Smart Study Cards</span>
+              </h1>
+              <p class="mb-0 bd-text-muted" id="heroSubtitle" style="font-size:1.05rem;max-width:540px;margin:0 auto">
+                Upload a PDF, Word doc, PowerPoint, or text file — AI reads it and generates flashcards, summaries, or quizzes instantly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Upload section -->
+      <section class="py-3 pb-5">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-9">
+
+              <div class="glass-card p-4 mb-3">
+
+                <!-- Dropzone -->
+                <div class="bd-dropzone rounded-3 text-center p-4 mb-4" id="dropZone" role="button" tabindex="0">
+                  <div id="dropZoneDefault">
+                    <i class="bi bi-cloud-upload-fill mb-3 d-block" style="font-size:2.8rem;color:var(--primary)"></i>
+                    <p class="fw-600 mb-1" style="color:var(--text);font-weight:600">Drag &amp; drop your file here</p>
+                    <p class="bd-text-muted bd-font-sm mb-3">or click to browse</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                      <span class="px-2 py-1 rounded-2 bd-font-xs fw-600" style="background:var(--glass-bg2);border:1px solid var(--glass-border);color:var(--danger)"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</span>
+                      <span class="px-2 py-1 rounded-2 bd-font-xs fw-600" style="background:var(--glass-bg2);border:1px solid var(--glass-border);color:var(--primary)"><i class="bi bi-file-earmark-word me-1"></i>DOCX</span>
+                      <span class="px-2 py-1 rounded-2 bd-font-xs fw-600" style="background:var(--glass-bg2);border:1px solid var(--glass-border);color:var(--warning)"><i class="bi bi-file-earmark-slides me-1"></i>PPTX</span>
+                      <span class="px-2 py-1 rounded-2 bd-font-xs fw-600" style="background:var(--glass-bg2);border:1px solid var(--glass-border);color:var(--success)"><i class="bi bi-file-earmark-text me-1"></i>TXT</span>
+                      <span class="px-2 py-1 rounded-2 bd-font-xs fw-600" style="background:var(--glass-bg2);border:1px solid var(--glass-border);color:var(--secondary)"><i class="bi bi-markdown me-1"></i>MD</span>
+                    </div>
+                  </div>
+                  <div id="dropZoneSelected" class="d-none">
+                    <i class="bi bi-file-earmark-check-fill d-block mb-3" style="font-size:2.8rem;color:var(--success)"></i>
+                    <p class="fw-600 mb-1" style="color:var(--text);font-weight:600" id="selectedFileName">file.pdf</p>
+                    <p class="bd-text-muted bd-font-sm mb-0" id="selectedFileSize">0 KB</p>
+                    <button class="btn-neu mt-2 px-3 py-1 rounded-3 bd-font-sm" id="clearFileBtn" type="button"><i class="bi bi-x-circle me-1"></i>Remove</button>
+                  </div>
+                  <input type="file" id="fileInput" accept=".pdf,.docx,.pptx,.txt,.md" class="d-none" aria-hidden="true"/>
+                </div>
+
+                <p class="text-center bd-text-muted bd-font-sm mb-4"><i class="bi bi-info-circle me-1"></i>Maximum file size: <strong>20MB</strong></p>
+
+                <!-- Card type selector -->
+                <div class="mb-4">
+                  <label class="neu-label mb-3"><i class="bi bi-grid-3x3-gap me-2 text-primary"></i>Choose study card type:</label>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <input type="radio" class="btn-check" name="cardType" id="typeFlashcard" value="flashcard" checked>
+                      <label class="btn bd-card-type-btn w-100 h-100 p-3" for="typeFlashcard">
+                        <i class="bi bi-card-text d-block fs-3 mb-2 text-primary"></i>
+                        <span class="fw-600 d-block" style="font-weight:600">Flashcards</span>
+                        <small class="bd-text-muted">Q&amp;A flip cards</small>
+                      </label>
+                    </div>
+                    <div class="col-md-4">
+                      <input type="radio" class="btn-check" name="cardType" id="typeSummary" value="summary">
+                      <label class="btn bd-card-type-btn w-100 h-100 p-3" for="typeSummary">
+                        <i class="bi bi-list-ul d-block fs-3 mb-2 text-primary"></i>
+                        <span class="fw-600 d-block" style="font-weight:600">Summaries</span>
+                        <small class="bd-text-muted">Key concept cards</small>
+                      </label>
+                    </div>
+                    <div class="col-md-4">
+                      <input type="radio" class="btn-check" name="cardType" id="typeQuiz" value="quiz">
+                      <label class="btn bd-card-type-btn w-100 h-100 p-3" for="typeQuiz">
+                        <i class="bi bi-patch-question d-block fs-3 mb-2 text-primary"></i>
+                        <span class="fw-600 d-block" style="font-weight:600">Quiz</span>
+                        <small class="bd-text-muted">Multiple choice</small>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-grid">
+                  <button class="btn-primary-neu py-3 rounded-3 fw-700 fs-6" id="generateBtn" type="button" disabled>
+                    <i class="bi bi-stars me-2"></i>Generate Study Cards
+                  </button>
+                </div>
+
+              </div>
+
+              <div class="bd-alert-glass p-3 rounded-3 d-none" id="errorAlert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><span id="errorMessage"></span>
+              </div>
+
+              <!-- Auth CTA (guest) -->
+              <div class="glass-card p-3 text-center" id="authCta">
+                <p class="bd-text-muted bd-font-sm mb-2"><i class="bi bi-bookmark me-1"></i>Log in to save your decks and study history</p>
+                <div class="d-flex gap-2 justify-content-center">
+                  <a href="login.html" class="btn-neu px-3 py-1 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600">Log In</a>
+                  <a href="register.html" class="btn-primary-neu px-3 py-1 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600">Sign Up Free</a>
+                </div>
+              </div>
+              <!-- Logged-in welcome -->
+              <div class="glass-card p-3 d-none" id="authWelcome">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                  <div id="welcomeAvatar" style="width:40px;height:40px;border-radius:50%;background:var(--grad-primary);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;flex-shrink:0;box-shadow:3px 3px 8px rgba(108,99,255,0.35)">?</div>
+                  <div>
+                    <div class="fw-700 bd-font-sm" id="welcomeName" style="color:var(--text)">Welcome back!</div>
+                    <div class="bd-font-xs" style="color:var(--text-muted)" id="welcomeDecks">Your decks are ready</div>
+                  </div>
+                  <div class="d-flex gap-2 ms-auto flex-wrap">
+                    <a href="dashboard.html" class="btn-neu px-3 py-1 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600"><i class="bi bi-grid me-1"></i>Dashboard</a>
+                    <a href="decks.html" class="btn-primary-neu px-3 py-1 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600"><i class="bi bi-collection me-1"></i>My Decks</a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How it works -->
+      <section class="bd-how-section py-4">
+        <div class="container text-center">
+          <h2 class="fw-800 mb-1" style="color:var(--text)">How it works</h2>
+          <p class="bd-text-muted mb-4">Three simple steps to better studying</p>
+          <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
+              <div class="bd-step-icon mb-3"><i class="bi bi-cloud-upload" style="color:var(--primary)"></i></div>
+              <h5 class="fw-700" style="color:var(--text)">Upload</h5>
+              <p class="bd-text-muted bd-font-sm">Drop any document — PDF, Word, PowerPoint, or text. Up to 20MB.</p>
+            </div>
+            <div class="col-md-4">
+              <div class="bd-step-icon mb-3"><i class="bi bi-cpu" style="color:var(--secondary)"></i></div>
+              <h5 class="fw-700" style="color:var(--text)">AI Reads</h5>
+              <p class="bd-text-muted bd-font-sm">AI reads and understands your content.</p>
+            </div>
+            <div class="col-md-4">
+              <div class="bd-step-icon mb-3"><i class="bi bi-card-checklist" style="color:var(--success)"></i></div>
+              <h5 class="fw-700" style="color:var(--text)">Study</h5>
+              <p class="bd-text-muted bd-font-sm">Review flashcards, summaries, or take a quiz.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="bd-footer py-3">
+      <div class="container text-center">
+        <p class="bd-text-muted bd-font-sm mb-0"><i class="bi bi-journals me-1" style="color:var(--primary)"></i><strong>BrainDeck</strong> — AI-powered study tool.</p>
+      </div>
+    </footer>
+
+  </div><!-- /bd-main -->
+</div><!-- /bd-layout -->
+
+<!-- Loading modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 p-2 text-center" style="background:var(--modal-bg);border:1px solid var(--modal-border)!important;box-shadow:var(--modal-shadow)">
+      <div class="modal-body py-5">
+        <div class="bd-spinner mx-auto mb-4"></div>
+        <h5 class="fw-bold mb-2" style="color:var(--text)" id="loadingTitle">Reading your document...</h5>
+        <p class="bd-text-muted mb-0" id="loadingSubtitle">This may take a few seconds.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/aimode.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/sidebar.js"></script>
+<script src="js/difficulty-tuner.js"></script>
+  <script src="js/upload.js"></script>
+<script src="js/urlimport.js"></script>
+<script src="js/shortcuts.js"></script>
+<script src="js/pomodoro.js"></script>
+<script>
+(async () => {
+  let user = BrainDeckAuth.getToken() ? await BrainDeckAuth.getCurrentUser() : null;
+  if (!user) user = await BrainDeckAuth.tryRefresh();
+
+  const authCta     = document.getElementById('authCta');
+  const authWelcome = document.getElementById('authWelcome');
+  const heroSubtitle= document.getElementById('heroSubtitle');
+  const topbarAvatar= document.getElementById('topbarAvatar');
+  const topbarName  = document.getElementById('topbarName');
+  const topbarDropName = document.getElementById('topbarDropName');
+  const topbarDropEmail= document.getElementById('topbarDropEmail');
+  const welcomeName = document.getElementById('welcomeName');
+  const welcomeAvatar= document.getElementById('welcomeAvatar');
+  const welcomeDecks = document.getElementById('welcomeDecks');
+
+  document.getElementById('sidebarLogout')?.addEventListener('click', () => BrainDeckAuth.logout());
+  document.getElementById('topbarLogout')?.addEventListener('click',  () => BrainDeckAuth.logout());
+
+  if (user) {
+    const firstName = (user.name || user.email || 'User').split(' ')[0];
+    const initials  = (user.name || user.email || '?').slice(0,2).toUpperCase();
+    const avatarHtml= user.avatarUrl
+      ? `<img src="${user.avatarUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover" onerror="this.parentElement.textContent='${initials}'">`
+      : initials;
+
+    authCta?.classList.add('d-none');
+    authWelcome?.classList.remove('d-none');
+    if (heroSubtitle) heroSubtitle.textContent = `Good to see you, ${firstName}! Upload a document to generate new study cards.`;
+    if (topbarAvatar) topbarAvatar.innerHTML = avatarHtml;
+    if (topbarName)   topbarName.textContent = firstName;
+    if (topbarDropName)  topbarDropName.textContent = user.name || firstName;
+    if (topbarDropEmail) topbarDropEmail.textContent = user.email || '';
+    if (welcomeName)  welcomeName.textContent = `Welcome back, ${firstName}!`;
+    if (welcomeAvatar) welcomeAvatar.innerHTML = avatarHtml;
+
+    try {
+      const r = await fetch('/api/decks', { headers: BrainDeckAuth.getHeaders(), credentials:'include' });
+      const d = await r.json();
+      if (d.success && welcomeDecks) {
+        const c = d.data.decks?.length || 0;
+        welcomeDecks.textContent = c > 0 ? `${c} deck${c!==1?'s':''} saved` : 'No decks yet — upload one!';
+      }
+    } catch {}
+  } else {
+    authCta?.classList.remove('d-none');
+    authWelcome?.classList.add('d-none');
+  }
+})();
+</script>
+  <script src="/js/email-verify-banner.js"></script>
+  <script src="/js/push-notifications.js"></script>
+  <script src="/js/notification-settings.js"></script>
+  <script src="/js/pwa.js"></script>
+  <script src="/js/card-editor.js"></script>
+<script>
+// ── Show "Edit cards" button if session exists ──
+document.addEventListener('DOMContentLoaded', () => {
+  const raw = localStorage.getItem('bd_session');
+  if (!raw || typeof CardEditor === 'undefined') return;
+  const session = JSON.parse(raw);
+  if (!session.cards?.length) return;
+
+  // Add edit button near the auth welcome card
+  const welcome = document.getElementById('authWelcome');
+  if (welcome) {
+    const editBtn = document.createElement('button');
+    editBtn.className = 'ce-trigger-btn mt-2';
+    editBtn.innerHTML = '<i class="bi bi-pencil-square"></i> Edit last deck cards';
+    editBtn.addEventListener('click', () => {
+      CardEditor.open(session.cards, session.cardType, (updated) => {
+        session.cards = updated;
+        session.cardCount = updated.length;
+        localStorage.setItem('bd_session', JSON.stringify(session));
+      });
+    });
+    welcome.appendChild(editBtn);
+  }
+});
+</script>
+</body>
+</html>

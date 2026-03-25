@@ -1,0 +1,504 @@
+/* ══════════════════════════════════════════
+   BrainDeck — Global Styles
+   Neumorphism + Glassmorphism
+   ══════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body.bd-body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Background blobs ── */
+body.bd-body::before,
+body.bd-body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+  pointer-events: none;
+}
+body.bd-body::before {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(108,99,255,0.18) 0%, transparent 70%);
+  top: -100px; left: -100px;
+}
+body.bd-body::after {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, transparent 70%);
+  bottom: -80px; right: -80px;
+}
+
+/* ── Neumorphism base card ── */
+.neu-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neu-shadow);
+  transition: var(--transition);
+}
+.neu-card:hover { box-shadow: var(--neu-hover); }
+
+/* ── Glass card ── */
+.glass-card {
+  background: rgba(255,255,255,0.35);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(108,99,255,0.12), var(--neu-shadow-sm);
+}
+
+/* ── Navbar ── */
+.bd-navbar {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 1rem 0;
+  position: relative; z-index: 1050;
+  box-shadow: 0 4px 24px rgba(108,99,255,0.08);
+}
+
+/* ── Fix modal stacking — must sit above all sections ── */
+.modal         { z-index: 1055 !important; }
+.modal-backdrop{ z-index: 1054 !important; }
+#aiModeModal   { z-index: 1060 !important; }
+.bd-brand-text { color: var(--text); font-weight: 700; font-size: 1.2rem; }
+.bd-brand-icon { font-size: 1.4rem; }
+
+/* ── Buttons ── */
+.btn-neu {
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--neu-shadow-sm);
+  color: var(--text);
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.btn-neu:hover  { box-shadow: var(--neu-hover); transform: translateY(-1px); color: var(--primary); }
+.btn-neu:active { box-shadow: var(--neu-pressed); transform: translateY(0); }
+
+.btn-primary-neu {
+  background: var(--grad-primary);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: 4px 4px 12px rgba(108,99,255,0.4), -2px -2px 8px rgba(255,255,255,0.6);
+  color: #fff;
+  font-weight: 600;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.btn-primary-neu:hover  { box-shadow: 6px 6px 18px rgba(108,99,255,0.5), -3px -3px 10px rgba(255,255,255,0.7); transform: translateY(-2px); color: #fff; }
+.btn-primary-neu:active { box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2); transform: translateY(0); }
+.btn-primary-neu:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ── Inputs ── */
+.neu-input {
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--neu-inset);
+  color: var(--text);
+  font-family: var(--font);
+  transition: var(--transition);
+  outline: none;
+  padding: .75rem 1rem;
+  width: 100%;
+}
+.neu-input:focus {
+  box-shadow: var(--neu-inset), 0 0 0 2px rgba(108,99,255,0.3);
+}
+.neu-input::placeholder { color: var(--text-light); }
+
+/* ── Drop zone ── */
+.bd-dropzone {
+  background: var(--surface);
+  border: 2px dashed rgba(108,99,255,0.3);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neu-inset);
+  transition: var(--transition);
+  cursor: pointer;
+}
+.bd-dropzone:hover,
+.bd-dropzone--active {
+  border-color: var(--primary);
+  box-shadow: var(--neu-inset), 0 0 0 3px rgba(108,99,255,0.15);
+  background: rgba(108,99,255,0.04);
+}
+
+/* ── Card type buttons ── */
+.bd-card-type-btn {
+  background: var(--surface);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  box-shadow: var(--neu-shadow-sm);
+  color: var(--text);
+  transition: var(--transition);
+  text-align: center;
+}
+.bd-card-type-btn:hover {
+  box-shadow: var(--neu-hover);
+  color: var(--primary);
+  border-color: rgba(108,99,255,0.3);
+  transform: translateY(-2px);
+}
+.btn-check:checked + .bd-card-type-btn {
+  border-color: var(--primary);
+  background: linear-gradient(145deg, rgba(108,99,255,0.08) 0%, rgba(56,189,248,0.05) 100%);
+  box-shadow: var(--neu-inset), 0 0 0 2px rgba(108,99,255,0.2);
+  color: var(--primary);
+}
+
+/* ── Hero ── */
+.bd-hero {
+  background: transparent;
+  padding: 4rem 0 2rem;
+}
+.bd-hero-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+}
+
+/* ── Badges ── */
+.bd-badge-glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  padding: .35rem 1rem;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* ── How it works steps ── */
+.bd-how-section { background: transparent; padding: 4rem 0; }
+.bd-step-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--neu-shadow);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+}
+
+/* ── Footer ── */
+.bd-footer {
+  background: var(--glass-bg);
+  border-top: 1px solid var(--glass-border);
+}
+
+/* ── Helpers ── */
+.bd-text-primary { color: var(--primary); }
+.bd-text-muted   { color: var(--text-muted); }
+.bd-font-sm      { font-size: .875rem; }
+.bd-font-xs      { font-size: .75rem; }
+
+
+/* ── Alert ── */
+.bd-alert-glass {
+  background: var(--glass-bg2);
+  backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid rgba(248,113,113,0.35);
+  border-radius: var(--radius);
+  color: #c0392b;
+}
+
+/* ── AI mode badge ── */
+.bd-ai-badge {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  padding: .35rem .9rem;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.bd-ai-badge:hover { box-shadow: var(--neu-shadow-sm); }
+
+/* ── Provider buttons ── */
+.bd-provider-btn {
+  background: var(--surface);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  box-shadow: var(--neu-shadow-sm);
+  color: var(--text);
+  transition: var(--transition);
+}
+.bd-provider-btn:hover { transform: translateY(-2px); box-shadow: var(--neu-hover); }
+.bd-provider-btn.active { border-color: var(--primary); background: rgba(108,99,255,0.08); box-shadow: var(--neu-inset); }
+
+/* ── Mode tabs ── */
+.bd-mode-tab {
+  background: var(--surface);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  box-shadow: var(--neu-shadow-sm);
+  color: var(--text-muted);
+  font-weight: 600;
+  transition: var(--transition);
+}
+.bd-mode-tab.active-tab {
+  background: var(--grad-primary);
+  color: #fff;
+  box-shadow: 4px 4px 12px rgba(108,99,255,0.4);
+  border-color: transparent;
+}
+
+/* ── Switcher nav buttons ── */
+.bd-switcher-active {
+  background: var(--grad-primary) !important;
+  color: #fff !important;
+  box-shadow: 3px 3px 10px rgba(108,99,255,0.35) !important;
+  border: none !important;
+  pointer-events: none;
+}
+
+/* ── Progress bar ── */
+.bd-progress-wrap {
+  background: var(--surface);
+  border-radius: 50px;
+  box-shadow: var(--neu-inset);
+  height: 10px;
+  overflow: hidden;
+}
+.bd-progress-fill {
+  height: 100%;
+  border-radius: 50px;
+  background: var(--grad-primary);
+  box-shadow: 0 0 8px rgba(108,99,255,0.5);
+  transition: width 0.4s ease;
+}
+
+/* ── Difficulty badges ── */
+.bd-diff-easy   { background: rgba(52,211,153,0.15); color: #059669; border: 1px solid rgba(52,211,153,0.3); border-radius: 50px; }
+.bd-diff-medium { background: rgba(251,191,36,0.15);  color: #d97706; border: 1px solid rgba(251,191,36,0.3);  border-radius: 50px; }
+.bd-diff-hard   { background: rgba(248,113,113,0.15); color: #dc2626; border: 1px solid rgba(248,113,113,0.3); border-radius: 50px; }
+
+/* ── Spinner ── */
+.bd-spinner {
+  width: 48px; height: 48px;
+  border: 4px solid rgba(108,99,255,0.15);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .bd-hero { padding: 2.5rem 0 1.5rem; }
+  .neu-card, .glass-card { border-radius: var(--radius); }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* ── Focus mode ── */
+body.bd-focus-mode .bd-navbar,
+body.bd-focus-mode .bd-how-section,
+body.bd-focus-mode .bd-footer,
+body.bd-focus-mode #exportBar,
+body.bd-focus-mode #pomodoroWidget,
+body.bd-focus-mode #chatToggleBtn { opacity:0; pointer-events:none; }
+body.bd-focus-mode::before,
+body.bd-focus-mode::after { opacity:0; }
+body.bd-focus-mode main { padding-top: 3rem !important; }
+
+/* ── Score share button ── */
+.bd-share-score-btn {
+  background: var(--surface);
+  border: none; border-radius: var(--radius);
+  box-shadow: var(--neu-shadow-sm);
+  padding: .5rem 1rem; cursor:pointer;
+  color: var(--text-muted); font-size: .82rem; font-weight:600;
+  transition: var(--transition);
+}
+.bd-share-score-btn:hover { color:var(--primary); box-shadow:var(--neu-hover); }
+
+/* ── Chat panel animation ── */
+#docChatPanel { animation: slideUp .2s ease; }
+@keyframes slideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── TTS active state ── */
+.bd-tts-btn.active { color: var(--primary) !important; }
+
+/* ══════════════════════════════════════════
+   MODAL STACKING FIX
+   ══════════════════════════════════════════ */
+.modal-backdrop     { z-index: 1040 !important; }
+.modal              { z-index: 1045 !important; }
+.modal-dialog       { z-index: 1046 !important; }
+.modal-content      { z-index: 1047 !important; position: relative; }
+
+/* ── Dark mode modal internals ── */
+[data-theme="dark"] .modal-content {
+  color: var(--text) !important;
+}
+[data-theme="dark"] .modal-content .neu-card {
+  background: rgba(30,36,56,0.9) !important;
+  box-shadow: var(--neu-shadow) !important;
+}
+[data-theme="dark"] .modal-content code {
+  background: rgba(15,19,30,0.8) !important;
+  color: var(--primary) !important;
+}
+[data-theme="dark"] .modal-content .neu-input,
+[data-theme="dark"] .modal-content select.neu-input {
+  background: rgba(20,25,38,0.95) !important;
+  color: var(--text) !important;
+  box-shadow: var(--neu-inset) !important;
+}
+[data-theme="dark"] .modal-content .btn-close {
+  filter: invert(1);
+}
+[data-theme="dark"] .modal-backdrop {
+  background-color: rgba(0,0,0,0.75) !important;
+}
+
+/* ── Dark mode modal background — direct override ── */
+[data-theme="dark"] #aiModeModal .modal-content {
+  background: rgba(20, 25, 40, 0.98) !important;
+  border: 1px solid rgba(108,99,255,0.3) !important;
+  box-shadow: 12px 12px 32px #0a0d14, -4px -4px 16px #1e2438 !important;
+  color: var(--text) !important;
+}
+[data-theme="dark"] #aiModeModal .modal-title,
+[data-theme="dark"] #aiModeModal h5,
+[data-theme="dark"] #aiModeModal p,
+[data-theme="dark"] #aiModeModal label,
+[data-theme="dark"] #aiModeModal span {
+  color: var(--text) !important;
+}
+[data-theme="dark"] #aiModeModal .bd-mode-tab {
+  background: rgba(30,36,56,0.9) !important;
+  color: var(--text-muted) !important;
+  border-color: rgba(108,99,255,0.15) !important;
+}
+[data-theme="dark"] #aiModeModal .bd-mode-tab.active-tab {
+  background: var(--grad-primary) !important;
+  color: #fff !important;
+}
+[data-theme="dark"] #aiModeModal .neu-card {
+  background: rgba(26,31,46,0.95) !important;
+  box-shadow: var(--neu-shadow) !important;
+}
+[data-theme="dark"] #aiModeModal .neu-input,
+[data-theme="dark"] #aiModeModal select {
+  background: rgba(15,19,30,0.95) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(108,99,255,0.2) !important;
+}
+[data-theme="dark"] #aiModeModal code {
+  background: rgba(10,13,20,0.9) !important;
+  color: var(--primary) !important;
+}
+[data-theme="dark"] #aiModeModal .btn-close {
+  filter: invert(1) !important;
+}
+[data-theme="dark"] #aiModeModal .btn-neu {
+  background: rgba(30,36,56,0.9) !important;
+  color: var(--text) !important;
+  box-shadow: var(--neu-shadow-sm) !important;
+}
+[data-theme="dark"] #aiModeModal .bd-provider-btn {
+  background: rgba(26,31,46,0.95) !important;
+  color: var(--text) !important;
+  border-color: rgba(108,99,255,0.15) !important;
+}
+[data-theme="dark"] #aiModeModal .bd-provider-btn.active {
+  background: rgba(108,99,255,0.2) !important;
+  border-color: var(--primary) !important;
+}
+
+/* ══════════════════════════════════════════
+   DARK MODE — PAGE COMPONENT OVERRIDES
+   ══════════════════════════════════════════ */
+[data-theme="dark"] .glass-card {
+  background: rgba(26,31,46,0.85) !important;
+  border-color: rgba(108,99,255,0.2) !important;
+}
+[data-theme="dark"] .neu-card {
+  background: var(--surface) !important;
+  box-shadow: var(--neu-shadow) !important;
+}
+[data-theme="dark"] .bd-card-type-btn {
+  background: rgba(26,31,46,0.9) !important;
+  border-color: rgba(108,99,255,0.15) !important;
+  color: var(--text) !important;
+}
+[data-theme="dark"] .btn-check:checked + .bd-card-type-btn {
+  background: rgba(108,99,255,0.18) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+[data-theme="dark"] .bd-dropzone {
+  background: rgba(20,25,40,0.8) !important;
+  border-color: rgba(108,99,255,0.25) !important;
+}
+[data-theme="dark"] .bd-dropzone:hover,
+[data-theme="dark"] .bd-dropzone--active {
+  background: rgba(108,99,255,0.08) !important;
+  border-color: var(--primary) !important;
+}
+[data-theme="dark"] .bd-footer,
+[data-theme="dark"] .bd-alert-glass {
+  background: rgba(20,25,40,0.8) !important;
+}
+[data-theme="dark"] .neu-input,
+[data-theme="dark"] select.neu-input,
+[data-theme="dark"] input.neu-input {
+  background: rgba(15,19,30,0.95) !important;
+  color: var(--text) !important;
+  box-shadow: var(--neu-inset) !important;
+}
+[data-theme="dark"] .btn-neu {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  box-shadow: var(--neu-shadow-sm) !important;
+}
+[data-theme="dark"] .btn-neu:hover {
+  color: var(--primary) !important;
+  box-shadow: var(--neu-hover) !important;
+}
+[data-theme="dark"] .progress,
+[data-theme="dark"] .bd-progress-wrap {
+  background: var(--surface) !important;
+  box-shadow: var(--neu-inset) !important;
+}
+[data-theme="dark"] .auth-card {
+  background: rgba(26,31,46,0.92) !important;
+  border-color: rgba(108,99,255,0.2) !important;
+}
+[data-theme="dark"] .bd-navbar {
+  background: rgba(20,25,40,0.92) !important;
+  border-color: rgba(108,99,255,0.15) !important;
+}
+
+/* ── Navbar dropdown dark mode ── */
+[data-theme="dark"] .dropdown-menu {
+  background: var(--surface) !important;
+  border: 1px solid rgba(108,99,255,0.2) !important;
+}
+[data-theme="dark"] .dropdown-item:hover {
+  background: rgba(108,99,255,0.12) !important;
+  color: var(--primary) !important;
+}
+[data-theme="dark"] .dropdown-divider {
+  border-color: rgba(108,99,255,0.15) !important;
+}
+.dropdown-toggle::after { display: none; }

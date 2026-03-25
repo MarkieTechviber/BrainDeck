@@ -1,0 +1,347 @@
+/* ══════════════════════════════════════════
+   BrainDeck — Card Editor Panel
+   ══════════════════════════════════════════ */
+
+/* ── Overlay backdrop ── */
+.ce-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1200;
+  opacity: 0;
+  transition: opacity .25s ease;
+  pointer-events: none;
+}
+.ce-backdrop.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Side panel ── */
+.ce-panel {
+  position: fixed;
+  top: 0; right: 0;
+  width: 480px;
+  max-width: 100vw;
+  height: 100vh;
+  background: var(--surface);
+  box-shadow: -8px 0 48px rgba(0,0,0,0.2);
+  z-index: 1201;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .3s cubic-bezier(0.4,0,0.2,1);
+}
+.ce-panel.open { transform: translateX(0); }
+
+/* ── Panel header ── */
+.ce-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.25rem;
+  border-bottom: .5px solid rgba(108,99,255,0.15);
+  flex-shrink: 0;
+}
+.ce-title {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.ce-title i { color: var(--primary); }
+.ce-header-actions { display: flex; align-items: center; gap: .5rem; }
+.ce-close-btn {
+  background: none; border: none;
+  color: var(--text-muted); cursor: pointer;
+  font-size: 1.2rem; padding: .2rem .4rem;
+  border-radius: 8px; transition: var(--transition);
+  line-height: 1;
+}
+.ce-close-btn:hover { color: var(--text); background: rgba(108,99,255,0.08); }
+
+/* ── Toolbar ── */
+.ce-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .6rem 1.25rem;
+  border-bottom: .5px solid rgba(108,99,255,0.1);
+  flex-shrink: 0;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.ce-search {
+  flex: 1;
+  min-width: 120px;
+  background: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--neu-inset);
+  padding: .4rem .75rem;
+  font-size: .82rem;
+  color: var(--text);
+  outline: none;
+}
+.ce-count {
+  font-size: .78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ce-add-btn {
+  background: var(--grad-primary);
+  color: #fff; border: none;
+  border-radius: var(--radius);
+  padding: .4rem .85rem;
+  font-size: .8rem; font-weight: 700;
+  cursor: pointer;
+  box-shadow: 3px 3px 8px rgba(108,99,255,.3);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.ce-add-btn:hover { transform: translateY(-1px); box-shadow: 4px 4px 12px rgba(108,99,255,.4); }
+
+/* ── Card list ── */
+.ce-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: .75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.ce-list::-webkit-scrollbar { width: 4px; }
+.ce-list::-webkit-scrollbar-thumb { background: rgba(108,99,255,.2); border-radius: 4px; }
+
+/* ── Card item ── */
+.ce-card-item {
+  background: var(--surface);
+  border: .5px solid rgba(108,99,255,0.12);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neu-shadow-sm);
+  overflow: hidden;
+  transition: box-shadow .2s;
+}
+.ce-card-item:hover { box-shadow: var(--neu-hover); }
+.ce-card-item.editing { border-color: rgba(108,99,255,0.4); }
+.ce-card-item.new-card { border-color: rgba(52,211,153,0.5); animation: ceSlideIn .25s ease; }
+
+@keyframes ceSlideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ceSlideOut {
+  from { opacity: 1; transform: scale(1); max-height: 200px; }
+  to   { opacity: 0; transform: scale(0.95); max-height: 0; padding: 0; margin: 0; }
+}
+.ce-card-item.deleting {
+  animation: ceSlideOut .25s ease forwards;
+}
+
+/* ── Card item header ── */
+.ce-card-header {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem .75rem;
+  cursor: pointer;
+}
+.ce-card-num {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(108,99,255,.1);
+  color: var(--primary);
+  font-size: .7rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ce-card-preview {
+  flex: 1;
+  font-size: .82rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.ce-card-actions { display: flex; gap: 2px; flex-shrink: 0; }
+.ce-icon-btn {
+  background: none; border: none;
+  color: var(--text-muted); cursor: pointer;
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem;
+  transition: var(--transition);
+}
+.ce-icon-btn:hover { background: rgba(108,99,255,.1); color: var(--primary); }
+.ce-icon-btn.del:hover { background: rgba(248,113,113,.12); color: var(--danger); }
+.ce-drag-handle { cursor: grab; }
+.ce-drag-handle:active { cursor: grabbing; }
+
+/* ── Edit form inside card ── */
+.ce-edit-form {
+  padding: .5rem .75rem .75rem;
+  border-top: .5px solid rgba(108,99,255,.1);
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.ce-field-label {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.ce-textarea {
+  width: 100%;
+  background: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--neu-inset);
+  padding: .55rem .75rem;
+  font-size: .84rem;
+  color: var(--text);
+  resize: vertical;
+  min-height: 60px;
+  font-family: var(--font);
+  line-height: 1.5;
+  outline: none;
+  transition: box-shadow .15s;
+}
+.ce-textarea:focus { box-shadow: var(--neu-inset), 0 0 0 2px rgba(108,99,255,.25); }
+
+.ce-diff-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.ce-diff-label { font-size: .78rem; color: var(--text-muted); }
+.ce-diff-select {
+  background: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--neu-inset);
+  padding: .3rem .6rem;
+  font-size: .8rem;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+.ce-save-row {
+  display: flex;
+  gap: .4rem;
+  justify-content: flex-end;
+}
+.ce-btn {
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--neu-shadow-sm);
+  padding: .35rem .8rem;
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.ce-btn:hover { box-shadow: var(--neu-hover); color: var(--text); }
+.ce-btn.primary {
+  background: var(--grad-primary);
+  color: #fff;
+  box-shadow: 2px 2px 8px rgba(108,99,255,.3);
+}
+.ce-btn.primary:hover { box-shadow: 3px 3px 12px rgba(108,99,255,.45); }
+
+/* ── Empty state ── */
+.ce-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+.ce-empty i { font-size: 2.5rem; margin-bottom: .75rem; display: block; opacity: .4; }
+
+/* ── Footer ── */
+.ce-footer {
+  padding: .85rem 1.25rem;
+  border-top: .5px solid rgba(108,99,255,.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.ce-footer-note {
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+.ce-apply-btn {
+  background: var(--grad-primary);
+  color: #fff; border: none;
+  border-radius: var(--radius);
+  padding: .55rem 1.25rem;
+  font-size: .85rem; font-weight: 700;
+  cursor: pointer;
+  box-shadow: 3px 3px 10px rgba(108,99,255,.35);
+  transition: var(--transition);
+}
+.ce-apply-btn:hover { transform: translateY(-1px); }
+
+/* ── Dark mode ── */
+[data-theme="dark"] .ce-panel {
+  background: rgba(20,25,40,0.98);
+  box-shadow: -8px 0 48px rgba(0,0,0,0.5);
+}
+[data-theme="dark"] .ce-card-item {
+  background: rgba(26,31,46,0.9);
+}
+[data-theme="dark"] .ce-textarea,
+[data-theme="dark"] .ce-search,
+[data-theme="dark"] .ce-diff-select {
+  background: rgba(15,19,30,0.95) !important;
+  color: var(--text) !important;
+}
+
+/* ── Mobile ── */
+@media (max-width: 540px) {
+  .ce-panel { width: 100vw; }
+}
+
+/* ── Trigger button ── */
+.ce-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--neu-shadow-sm);
+  padding: .45rem .9rem;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.ce-trigger-btn:hover {
+  box-shadow: var(--neu-hover);
+  color: var(--primary);
+}
+
+/* ── Shake animation for validation errors ── */
+@keyframes ceShake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-6px); }
+  40%     { transform: translateX(6px); }
+  60%     { transform: translateX(-4px); }
+  80%     { transform: translateX(4px); }
+}
+.ce-shake { animation: ceShake .45s ease; }

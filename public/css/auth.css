@@ -1,0 +1,40 @@
+/* ── Auth pages (login, register, forgot) ── */
+.auth-page {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 2rem 1rem;
+}
+.auth-card {
+  width: 100%; max-width: 440px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 3rem 2.5rem;
+  box-shadow: var(--neu-shadow), 0 12px 48px rgba(108,99,255,0.15);
+}
+.auth-logo {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--grad-primary);
+  box-shadow: 4px 4px 14px rgba(108,99,255,0.45);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; margin: 0 auto 1.5rem;
+}
+.auth-title   { font-size: 1.65rem; font-weight: 800; color: var(--text); text-align: center; }
+.auth-subtitle{ font-size: .9rem;  color: var(--text-muted); text-align: center; margin-top: .3rem; }
+.auth-divider {
+  text-align: center; position: relative; margin: 1.5rem 0; font-size: .8rem; color: var(--text-light);
+}
+.auth-divider::before, .auth-divider::after {
+  content: ''; position: absolute; top: 50%; width: 42%; height: 1px;
+  background: rgba(108,99,255,0.15);
+}
+.auth-divider::before { left: 0; } .auth-divider::after { right: 0; }
+.auth-link { color: var(--primary); font-weight: 600; text-decoration: none; transition: var(--transition); }
+.auth-link:hover { color: var(--primary-dark); text-decoration: underline; }
+.neu-label { font-size: .82rem; font-weight: 600; color: var(--text-muted); margin-bottom: .4rem; letter-spacing: .02em; }
+.input-icon-wrap { position: relative; }
+.input-icon-wrap .neu-input { padding-left: 2.6rem; }
+.input-icon-wrap .input-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light); font-size: 1rem; pointer-events: none; }
+.input-icon-wrap .input-eye { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light); cursor: pointer; background: none; border: none; padding: 0; font-size: 1rem; }
+.input-icon-wrap .input-eye:hover { color: var(--primary); }
