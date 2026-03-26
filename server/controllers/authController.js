@@ -6,7 +6,8 @@ const crypto = require('crypto');
 const { Op } = require('sequelize');
 const { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendLoginNotificationEmail } = require('../services/emailService');
 const path = require('path');
-const fs = require('fs');
+const fs   = require('fs');
+const { generateFolderName, getUserDir, toPublicUrl, UPLOADS_ROOT } = require('../utils/storageHelper');
 
 // ── REGISTER ──
 const register = async (req, res, next) => {
@@ -19,7 +20,7 @@ const register = async (req, res, next) => {
     if (exists) return sendError(res, 'An account with this email already exists.', 409);
 
     const user = await User.create({ name: name || '', email: email.toLowerCase(), passwordHash: password });
-    await Profile.create({ userId: user.id });
+    await Profile.create({ userId: user.id, storageFolder: generateFolderName() });
 
     // Generate email verification token
     const verifyToken = crypto.randomBytes(32).toString('hex');
@@ -238,21 +239,24 @@ const updateMe = async (req, res, next) => {
 const uploadAvatar = async (req, res, next) => {
   try {
     if (!req.file) return sendError(res, 'No file provided.', 400);
-    
+
     const user = await User.findByPk(req.userId);
     if (!user) return sendError(res, 'User not found.', 404);
-    
-    // Delete old avatar if it exists and is a file path
+
+    // Delete old avatar file if it was stored locally
     if (user.avatarUrl && user.avatarUrl.startsWith('/uploads/')) {
-      const oldPath = path.join(__dirname, '../../uploads', req.file.filename.split('/').pop());
-      fs.unlink(oldPath, err => {
-        if (err) console.error('Could not delete old avatar:', err);
-      });
+      // user.avatarUrl is like /uploads/profiles/XXX/avatars/YYY.jpg
+      // UPLOADS_ROOT points to the uploads/ folder itself
+      const relativePart = user.avatarUrl.replace('/uploads/', '');
+      const oldAbs = path.join(UPLOADS_ROOT, relativePart);
+      fs.unlink(oldAbs, () => {}); // silent — don't fail if already gone
     }
-    
-    user.avatarUrl = `/uploads/${req.file.filename}`;
+
+    // req.file.path is the full absolute path written by multer
+    const publicUrl = toPublicUrl(req.file.path);
+    user.avatarUrl  = publicUrl;
     await user.save();
-    
+
     return sendSuccess(res, { avatarUrl: user.avatarUrl }, 'Avatar uploaded successfully.', 201);
   } catch (err) { next(err); }
 };
@@ -261,21 +265,21 @@ const uploadAvatar = async (req, res, next) => {
 const uploadCover = async (req, res, next) => {
   try {
     if (!req.file) return sendError(res, 'No file provided.', 400);
-    
+
     const user = await User.findByPk(req.userId);
     if (!user) return sendError(res, 'User not found.', 404);
-    
-    // Delete old cover if it exists and is a file path
+
+    // Delete old cover file if it was stored locally
     if (user.coverUrl && user.coverUrl.startsWith('/uploads/')) {
-      const oldPath = path.join(__dirname, '../../uploads', req.file.filename.split('/').pop());
-      fs.unlink(oldPath, err => {
-        if (err) console.error('Could not delete old cover:', err);
-      });
+      const relativePart = user.coverUrl.replace('/uploads/', '');
+      const oldAbs = path.join(UPLOADS_ROOT, relativePart);
+      fs.unlink(oldAbs, () => {});
     }
-    
-    user.coverUrl = `/uploads/${req.file.filename}`;
+
+    const publicUrl = toPublicUrl(req.file.path);
+    user.coverUrl   = publicUrl;
     await user.save();
-    
+
     return sendSuccess(res, { coverUrl: user.coverUrl }, 'Cover photo uploaded successfully.', 201);
   } catch (err) { next(err); }
 };

@@ -13,190 +13,150 @@
 
   // ── Load profile images on page initialization ──
   const loadProfileImages = () => {
-    // Avatar
-    const avatarRing = document.getElementById('avatarRing');
-    const avatarImg = document.getElementById('avatarImg');
+    const avatarRing     = document.getElementById('avatarRing');
+    const avatarImg      = document.getElementById('avatarImg');
     const avatarInitials = document.getElementById('avatarInitials');
-    
+
     if (user.avatarUrl) {
-      avatarImg.src = user.avatarUrl;
-      avatarImg.style.display = 'block';
+      if (avatarImg) { avatarImg.src = user.avatarUrl; avatarImg.style.display = 'block'; }
       if (avatarInitials) avatarInitials.style.display = 'none';
     } else {
-      if (avatarInitials) {
-        avatarInitials.textContent = initials;
-        avatarInitials.style.display = 'block';
-      }
-      avatarImg.style.display = 'none';
+      if (avatarInitials) { avatarInitials.textContent = initials; avatarInitials.style.display = 'block'; }
+      if (avatarImg) avatarImg.style.display = 'none';
     }
 
-    // Cover photo
-    const coverArea = document.getElementById('coverArea');
     const coverImg = document.getElementById('coverImg');
-    
-    if (user.coverUrl) {
-      coverImg.src = user.coverUrl;
-      coverImg.style.display = 'block';
-    } else {
-      if (coverImg) coverImg.style.display = 'none';
+    if (coverImg) {
+      if (user.coverUrl) { coverImg.src = user.coverUrl; coverImg.style.display = 'block'; }
+      else coverImg.style.display = 'none';
     }
 
-    // Profile name and bio
     const profileNameEl = document.getElementById('profileName');
     if (profileNameEl) profileNameEl.textContent = user.name || 'No name set';
-    
+
     const profileEmailEl = document.getElementById('profileEmail');
     if (profileEmailEl) profileEmailEl.textContent = user.email || '';
-    
+
     const profileBioEl = document.getElementById('profileBioPreview');
-    if (profileBioEl && user.bio) {
-      profileBioEl.textContent = user.bio;
-    }
+    if (profileBioEl && user.bio) profileBioEl.textContent = user.bio;
   };
 
   loadProfileImages();
 
-  // ── Notification helper ──
+  // ── Toast notification ──
   const showNotification = (msg, type = 'success') => {
     const notif = document.createElement('div');
-    notif.className = `alert alert-${type} position-fixed bottom-3 end-3`;
+    notif.className = `alert alert-${type} position-fixed`;
+    notif.style.cssText = 'bottom:1.5rem;right:1.5rem;z-index:9999;min-width:220px;font-weight:600';
     notif.textContent = msg;
-    notif.style.zIndex = '9999';
     document.body.appendChild(notif);
-    setTimeout(() => notif.remove(), 3000);
+    setTimeout(() => notif.remove(), 3500);
   };
 
-  // ── Avatar upload handler ──
+  // ── Generic image uploader ──────────────────────────────────────────────────
+  // endpoint : '/api/auth/me/avatar' or '/api/auth/me/cover'
+  // fieldName: 'avatar' or 'cover'
+  // onSuccess: called with the returned URL string
+  const uploadImage = async (file, endpoint, fieldName, onSuccess, onBusy) => {
+    if (!file) return;
+
+    onBusy(true);
+    try {
+      const formData = new FormData();
+      formData.append(fieldName, file);          // ← correct field name for multer
+
+      const res  = await fetch(endpoint, {
+        method:      'POST',
+        headers:     { 'Authorization': `Bearer ${BrainDeckAuth.getToken()}` },
+        credentials: 'include',
+        body:        formData,                   // no Content-Type header — browser sets multipart boundary
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        onSuccess(data.data);
+      } else {
+        showNotification(data.message || 'Upload failed.', 'danger');
+      }
+    } catch (err) {
+      console.error('[Profile] Upload error:', err);
+      showNotification('Network error — please try again.', 'danger');
+    } finally {
+      onBusy(false);
+    }
+  };
+
+  // ── Avatar upload ───────────────────────────────────────────────────────────
   const avatarFileInput = document.getElementById('avatarFileInput');
-  const avatarRing = document.getElementById('avatarRing');
-  
+  const avatarRing      = document.getElementById('avatarRing');
+
   if (avatarRing && avatarFileInput) {
     avatarRing.addEventListener('click', () => avatarFileInput.click());
-    
+
     avatarFileInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        avatarRing.style.opacity = '0.6';
-        avatarRing.style.pointerEvents = 'none';
-
-        const uploadRes = await fetch('/api/upload/deck-image', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${BrainDeckAuth.getToken()}` },
-          credentials: 'include',
-          body: formData,
-        });
-
-        const uploadData = await uploadRes.json();
-        if (uploadData.success && uploadData.data?.fileName) {
-          // Build accessible URL
-          const avatarUrl = `/uploads/${uploadData.data.fileName}`;
-          
-          // Save to database
-          const saveRes = await fetch('/api/auth/me', {
-            method: 'PATCH',
-            headers: BrainDeckAuth.getHeaders(),
-            credentials: 'include',
-            body: JSON.stringify({ avatarUrl }),
-          });
-
-          const saveData = await saveRes.json();
-          if (saveData.success && saveData.data?.user) {
-            // Update local user object with full returned data
-            user = { ...user, ...saveData.data.user };
-            loadProfileImages();
-            showNotification('✓ Profile picture saved!', 'success');
-          } else {
-            showNotification('Failed to save profile picture', 'danger');
+      await uploadImage(
+        file,
+        '/api/auth/me/avatar',    // ← correct dedicated endpoint
+        'avatar',                 // ← multer field name on that route
+        (data) => {
+          user.avatarUrl = data.avatarUrl;
+          loadProfileImages();
+          showNotification('✓ Profile picture updated!', 'success');
+        },
+        (busy) => {
+          if (avatarRing) {
+            avatarRing.style.opacity      = busy ? '0.5' : '1';
+            avatarRing.style.pointerEvents = busy ? 'none' : 'auto';
           }
-        } else {
-          showNotification('Upload failed', 'danger');
         }
-      } catch (err) {
-        console.error('Avatar upload error:', err);
-        showNotification('Network error uploading avatar', 'danger');
-      } finally {
-        avatarRing.style.opacity = '1';
-        avatarRing.style.pointerEvents = 'auto';
-        avatarFileInput.value = '';
-      }
+      );
+
+      avatarFileInput.value = '';
     });
   }
 
-  // ── Cover photo upload handler ──
-  const coverFileInput = document.getElementById('coverFileInput');
-  const changeCoverBtn = document.getElementById('changeCoverBtn');
+  // ── Cover photo upload ──────────────────────────────────────────────────────
+  const coverFileInput  = document.getElementById('coverFileInput');
+  const changeCoverBtn  = document.getElementById('changeCoverBtn');
 
   if (changeCoverBtn && coverFileInput) {
     changeCoverBtn.addEventListener('click', () => coverFileInput.click());
-    
+
     coverFileInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        changeCoverBtn.style.opacity = '0.6';
-        changeCoverBtn.style.pointerEvents = 'none';
-
-        const uploadRes = await fetch('/api/upload/deck-image', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${BrainDeckAuth.getToken()}` },
-          credentials: 'include',
-          body: formData,
-        });
-
-        const uploadData = await uploadRes.json();
-        if (uploadData.success && uploadData.data?.fileName) {
-          // Build accessible URL
-          const coverUrl = `/uploads/${uploadData.data.fileName}`;
-          
-          // Save to database
-          const saveRes = await fetch('/api/auth/me', {
-            method: 'PATCH',
-            headers: BrainDeckAuth.getHeaders(),
-            credentials: 'include',
-            body: JSON.stringify({ coverUrl }),
-          });
-
-          const saveData = await saveRes.json();
-          if (saveData.success && saveData.data?.user) {
-            // Update local user object with full returned data
-            user = { ...user, ...saveData.data.user };
-            loadProfileImages();
-            showNotification('✓ Cover photo saved!', 'success');
-          } else {
-            showNotification('Failed to save cover photo', 'danger');
+      await uploadImage(
+        file,
+        '/api/auth/me/cover',    // ← correct dedicated endpoint
+        'cover',                 // ← multer field name on that route
+        (data) => {
+          user.coverUrl = data.coverUrl;
+          loadProfileImages();
+          showNotification('✓ Cover photo updated!', 'success');
+        },
+        (busy) => {
+          if (changeCoverBtn) {
+            changeCoverBtn.style.opacity      = busy ? '0.5' : '1';
+            changeCoverBtn.style.pointerEvents = busy ? 'none' : 'auto';
           }
-        } else {
-          showNotification('Upload failed', 'danger');
         }
-      } catch (err) {
-        console.error('Cover upload error:', err);
-        showNotification('Network error uploading cover', 'danger');
-      } finally {
-        changeCoverBtn.style.opacity = '1';
-        changeCoverBtn.style.pointerEvents = 'auto';
-        coverFileInput.value = '';
-      }
+      );
+
+      coverFileInput.value = '';
     });
   }
 
-  // ── Edit Quick Button (if exists) ──
+  // ── Edit Quick Button ──────────────────────────────────────────────────────
   const editQuickBtn = document.getElementById('editQuickBtn');
   if (editQuickBtn) {
     editQuickBtn.addEventListener('click', () => {
-      // Scroll to edit section or open modal
       const editSection = document.querySelector('[id*="edit"]') || document.querySelector('.sc');
-      if (editSection) {
-        editSection.scrollIntoView({ behavior: 'smooth' });
-      }
+      if (editSection) editSection.scrollIntoView({ behavior: 'smooth' });
     });
   }
 

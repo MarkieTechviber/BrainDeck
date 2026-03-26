@@ -21,15 +21,20 @@ const generateRoutes= require('./routes/generate');
 const cardsRoutes   = require('./routes/cards');
 const authRoutes    = require('./routes/auth');
 const oauthRoutes   = require('./routes/oauth');
+const userRoutes    = require('./routes/user');
 const deckRoutes    = require('./routes/decks');
 const pushRoutes    = require('./routes/push');
 const libraryRoutes = require('./routes/library');
+const chatRoutes    = require('./routes/chat');
+const shareRoutes   = require('./routes/share');
 
 const app = express();
 
 // ── MySQL / Sequelize ──────────────────────
 const { syncDB } = require('./models/index');
-syncDB().then(() => {
+const { runMigrations } = require('./utils/runMigrations');
+syncDB().then(async () => {
+  await runMigrations();
   const { startScheduler } = require('./services/notificationScheduler');
   startScheduler();
 });
@@ -59,12 +64,15 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // ── Routes ─────────────────────────────────
 app.use('/api/auth',     authRoutes);
 app.use('/api/auth',     oauthRoutes);
+app.use('/api/user',     userRoutes);
 app.use('/api/decks',    deckRoutes);
 app.use('/api/push',     pushRoutes);
 app.use('/api/library',  libraryRoutes);
 app.use('/api/upload',   uploadRoutes);
 app.use('/api/generate', generateRoutes);
 app.use('/api/cards',    cardsRoutes);
+app.use('/api/chat',     chatRoutes);
+app.use('/api/share',    shareRoutes);
 
 // ── Test Connection ────────────────────────────
 app.post('/api/test-connection', async (req, res) => {
@@ -181,6 +189,11 @@ app.get('/api/ollama/models', async (req, res) => {
     const r = await axios.get(`${ollamaUrl}/api/tags`, { timeout:4000 });
     res.json({ success:true, models: (r.data.models||[]).map(m=>({ name:m.name, size:m.size })), ollamaUrl });
   } catch { res.json({ success:false, models:[], error:'Ollama not reachable — is it running?' }); }
+});
+
+// ── Shared study page ──────────────────────
+app.get('/study/:id', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/shared-study.html'));
 });
 
 // ── Catch-all ──────────────────────────────

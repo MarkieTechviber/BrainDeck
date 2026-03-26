@@ -4,6 +4,10 @@ const { register, login, refresh, logout, forgotPassword, resetPassword, getMe, 
 const { requireAuth } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 
+// ── Middleware to tag which sub-folder multer should save into ──
+const setAvatarDir = (req, res, next) => { req._uploadSubDir = 'avatars'; next(); };
+const setCoverDir  = (req, res, next) => { req._uploadSubDir = 'covers';  next(); };
+
 router.post('/register',        register);
 router.post('/login',           login);
 router.post('/refresh',         refresh);
@@ -12,10 +16,10 @@ router.post('/forgot-password', forgotPassword);
 router.post('/reset-password',  resetPassword);
 router.get('/me',               requireAuth, getMe);
 router.patch('/me',             requireAuth, updateMe);
-router.post('/me/avatar',       requireAuth, upload.single('avatar'), uploadAvatar);
-router.post('/me/cover',        requireAuth, upload.single('cover'), uploadCover);
+router.post('/me/avatar',       requireAuth, setAvatarDir, upload.single('avatar'), uploadAvatar);
+router.post('/me/cover',        requireAuth, setCoverDir,  upload.single('cover'),  uploadCover);
 
-router.post('/verify-email',      verifyEmail);
+router.post('/verify-email',        verifyEmail);
 router.post('/resend-verification', requireAuth, resendVerification);
 
 module.exports = router;

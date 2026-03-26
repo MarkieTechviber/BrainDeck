@@ -145,55 +145,14 @@
       </div>
     </nav>
 
-    <!-- ── AUTH top bar (only shown when logged in) ── -->
-    <header class="bd-topbar">
-      <div class="bd-topbar-left">
-        <!-- Mobile hamburger -->
-        <button class="btn-neu px-2 py-2 rounded-3 d-md-none" id="sidebarMobileBtn">
-          <i class="bi bi-list" style="font-size:1.1rem;color:var(--text-muted)"></i>
-        </button>
-        <span class="fw-700 bd-font-sm d-md-none" style="color:var(--text)">BrainDeck</span>
-        <!-- Page title on desktop -->
-        <span class="fw-600 bd-font-sm d-none d-md-block" style="color:var(--text-muted)">
-          <i class="bi bi-house me-1"></i>Home
-        </span>
-      </div>
-      <div class="bd-topbar-right">
-        <div id="aiModeSwitcher"></div>
-        <!-- Auth avatar (top bar, logged in) -->
-        <div class="dropdown" id="topbarUserDropdown">
-          <button class="btn-neu px-2 py-1 rounded-3 d-flex align-items-center gap-2 dropdown-toggle"
-                  data-bs-toggle="dropdown" style="border:none;font-size:.85rem;font-weight:600">
-            <div id="topbarAvatar"
-                 style="width:28px;height:28px;border-radius:50%;background:var(--grad-primary);
-                        display:flex;align-items:center;justify-content:center;
-                        color:#fff;font-weight:700;font-size:.7rem;flex-shrink:0">?</div>
-            <span id="topbarName" class="bd-font-sm d-none d-md-block" style="color:var(--text)">User</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end rounded-3 border-0 mt-1"
-              style="background:var(--surface);box-shadow:var(--neu-shadow)!important;min-width:180px">
-            <li>
-              <div class="px-3 pt-2 pb-1">
-                <div class="bd-font-sm fw-700" id="topbarDropName" style="color:var(--text)">User</div>
-                <div class="bd-font-xs" id="topbarDropEmail" style="color:var(--text-muted)">—</div>
-              </div>
-            </li>
-            <li><hr class="dropdown-divider" style="border-color:rgba(108,99,255,0.1)"></li>
-            <li><a class="dropdown-item rounded-2 bd-font-sm" href="profile.html" style="color:var(--text);padding:.4rem .75rem"><i class="bi bi-person me-2" style="color:var(--primary)"></i>Profile</a></li>
-            <li><a class="dropdown-item rounded-2 bd-font-sm" href="dashboard.html" style="color:var(--text);padding:.4rem .75rem"><i class="bi bi-grid me-2" style="color:var(--primary)"></i>Dashboard</a></li>
-            <li><a class="dropdown-item rounded-2 bd-font-sm" href="decks.html" style="color:var(--text);padding:.4rem .75rem"><i class="bi bi-collection me-2" style="color:var(--primary)"></i>My Decks</a></li>
-            <li><hr class="dropdown-divider" style="border-color:rgba(108,99,255,0.1)"></li>
-            <li><button class="dropdown-item rounded-2 bd-font-sm" id="topbarLogout" style="color:var(--danger);padding:.4rem .75rem;background:none;border:none;width:100%;text-align:left"><i class="bi bi-box-arrow-right me-2"></i>Log Out</button></li>
-          </ul>
-        </div>
-      </div>
+    
     </header>
 
     <!-- ══ PAGE CONTENT ══ -->
     <main style="flex:1">
 
-      <!-- Hero -->
-      <section class="bd-hero py-4">
+      <!-- Hero (hidden when logged in) -->
+      <section class="bd-hero py-4" id="heroSection">
         <div class="container text-center">
           <div class="row justify-content-center">
             <div class="col-lg-8">
@@ -211,8 +170,8 @@
         </div>
       </section>
 
-      <!-- Upload section -->
-      <section class="py-3 pb-5">
+      <!-- Upload section (hidden when logged in) -->
+      <section class="py-3 pb-5" id="uploadSection">
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-lg-7 col-md-9">
@@ -315,8 +274,8 @@
         </div>
       </section>
 
-      <!-- How it works -->
-      <section class="bd-how-section py-4">
+      <!-- How it works (hidden when logged in) -->
+      <section class="bd-how-section py-4" id="howSection">
         <div class="container text-center">
           <h2 class="fw-800 mb-1" style="color:var(--text)">How it works</h2>
           <p class="bd-text-muted mb-4">Three simple steps to better studying</p>
@@ -339,6 +298,141 @@
           </div>
         </div>
       </section>
+
+      <!-- ══ TOOLS DASHBOARD (logged in only) ══ -->
+      <section id="toolsSection" class="py-4 pb-5">
+        <div class="container">
+
+          <!-- Welcome banner -->
+          <div class="bd-tools-welcome">
+            <div class="bd-tools-welcome-avatar" id="toolsAvatar">?</div>
+            <div class="bd-tools-welcome-text">
+              <div class="bd-tools-welcome-title" id="toolsWelcomeTitle">Welcome back!</div>
+              <div class="bd-tools-welcome-sub" id="toolsWelcomeSub">What would you like to study today?</div>
+            </div>
+            <div class="bd-tools-welcome-actions">
+              <a href="dashboard.html" class="btn-neu px-3 py-2 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600">
+                <i class="bi bi-grid me-1"></i>Dashboard
+              </a>
+              <a href="decks.html" class="btn-primary-neu px-3 py-2 rounded-3 bd-font-sm text-decoration-none" style="font-weight:600">
+                <i class="bi bi-collection me-1"></i>My Decks
+              </a>
+            </div>
+          </div>
+
+          <!-- Study Tools -->
+          <div class="bd-tools-heading"><i class="bi bi-mortarboard-fill me-2" style="color:var(--primary)"></i>Study Tools</div>
+          <div class="bd-tools-grid mb-4">
+
+            <!-- Flashcards — existing backend -->
+            <a href="flashcard.html" class="bd-tool-card" style="--tool-color:#6c63ff;--tool-grad:linear-gradient(135deg,#6c63ff,#8b85ff)">
+              <div class="bd-tool-icon"><i class="bi bi-card-text"></i></div>
+              <div class="bd-tool-name">Flashcards</div>
+              <div class="bd-tool-desc">Interactive Q&amp;A flip cards with spaced repetition</div>
+            </a>
+
+            <!-- Quiz — existing backend -->
+            <a href="quiz.html" class="bd-tool-card" style="--tool-color:#f472b6;--tool-grad:linear-gradient(135deg,#f472b6,#e879f9)">
+              <div class="bd-tool-icon"><i class="bi bi-patch-question-fill"></i></div>
+              <div class="bd-tool-name">Quiz</div>
+              <div class="bd-tool-desc">Multiple choice questions to test your knowledge</div>
+            </a>
+
+            <!-- Summary — existing backend -->
+            <a href="summary.html" class="bd-tool-card" style="--tool-color:#34d399;--tool-grad:linear-gradient(135deg,#34d399,#059669)">
+              <div class="bd-tool-icon"><i class="bi bi-list-ul"></i></div>
+              <div class="bd-tool-name">Summary</div>
+              <div class="bd-tool-desc">Key concept cards distilled from your document</div>
+            </a>
+
+            <!-- Upload / Generate — goes to upload flow -->
+            <a href="#uploadSection" class="bd-tool-card" id="toolUploadCard" style="--tool-color:#38bdf8;--tool-grad:linear-gradient(135deg,#38bdf8,#0ea5e9)"
+               onclick="event.preventDefault(); showUploadFlow();">
+              <div class="bd-tool-icon"><i class="bi bi-cloud-upload-fill"></i></div>
+              <div class="bd-tool-name">Upload & Generate</div>
+              <div class="bd-tool-desc">Upload a new document and generate study cards</div>
+            </a>
+
+          </div>
+
+          <!-- AI Writing Tools -->
+          <div class="bd-tools-heading"><i class="bi bi-stars me-2" style="color:var(--warning)"></i>AI Writing Tools</div>
+          <div class="bd-tools-grid">
+
+            <!-- Humanize -->
+            <div class="bd-tool-card" onclick="bdShowComingSoon('Humanize')" style="--tool-color:#f59e0b;--tool-grad:linear-gradient(135deg,#f59e0b,#f97316)">
+              <span class="bd-tool-badge">Soon</span>
+              <div class="bd-tool-icon"><i class="bi bi-person-hearts"></i></div>
+              <div class="bd-tool-name">Humanize</div>
+              <div class="bd-tool-desc">Make AI-written text sound natural and human</div>
+            </div>
+
+            <!-- AI Detection -->
+            <div class="bd-tool-card" onclick="bdShowComingSoon('AI Detection')" style="--tool-color:#6366f1;--tool-grad:linear-gradient(135deg,#6366f1,#8b5cf6)">
+              <span class="bd-tool-badge">Soon</span>
+              <div class="bd-tool-icon"><i class="bi bi-robot"></i></div>
+              <div class="bd-tool-name">AI Detection</div>
+              <div class="bd-tool-desc">Check if a text was written by AI</div>
+            </div>
+
+            <!-- Paraphrase -->
+            <div class="bd-tool-card" onclick="bdShowComingSoon('Paraphrase')" style="--tool-color:#10b981;--tool-grad:linear-gradient(135deg,#10b981,#14b8a6)">
+              <span class="bd-tool-badge">Soon</span>
+              <div class="bd-tool-icon"><i class="bi bi-arrow-repeat"></i></div>
+              <div class="bd-tool-name">Paraphrase</div>
+              <div class="bd-tool-desc">Rewrite any text in a different style or tone</div>
+            </div>
+
+            <!-- Grammar Checker -->
+            <div class="bd-tool-card" onclick="bdShowComingSoon('Grammar Checker')" style="--tool-color:#ef4444;--tool-grad:linear-gradient(135deg,#ef4444,#f43f5e)">
+              <span class="bd-tool-badge">Soon</span>
+              <div class="bd-tool-icon"><i class="bi bi-spellcheck"></i></div>
+              <div class="bd-tool-name">Grammar Checker</div>
+              <div class="bd-tool-desc">Catch errors and polish your writing instantly</div>
+            </div>
+
+            <!-- Translator -->
+            <div class="bd-tool-card" onclick="bdShowComingSoon('Translator')" style="--tool-color:#0284c7;--tool-grad:linear-gradient(135deg,#0284c7,#0ea5e9)">
+              <span class="bd-tool-badge">Soon</span>
+              <div class="bd-tool-icon"><i class="bi bi-translate"></i></div>
+              <div class="bd-tool-name">Translator</div>
+              <div class="bd-tool-desc">Translate your study material into any language</div>
+            </div>
+
+            <!-- Summarizer -->
+            <div class="bd-tool-card" onclick="bdShowComingSoon('Text Summarizer')" style="--tool-color:#7c3aed;--tool-grad:linear-gradient(135deg,#7c3aed,#a855f7)">
+              <span class="bd-tool-badge">Soon</span>
+              <div class="bd-tool-icon"><i class="bi bi-textarea-resize"></i></div>
+              <div class="bd-tool-name">Summarizer</div>
+              <div class="bd-tool-desc">Condense long texts into crisp, short summaries</div>
+            </div>
+
+            <!-- Citation Generator -->
+            <div class="bd-tool-card" onclick="bdShowComingSoon('Citation Generator')" style="--tool-color:#be185d;--tool-grad:linear-gradient(135deg,#be185d,#db2777)">
+              <span class="bd-tool-badge">Soon</span>
+              <div class="bd-tool-icon"><i class="bi bi-quote"></i></div>
+              <div class="bd-tool-name">Citation Generator</div>
+              <div class="bd-tool-desc">Auto-generate APA, MLA, Chicago citations</div>
+            </div>
+
+            <!-- Essay Writer -->
+            <div class="bd-tool-card" onclick="bdShowComingSoon('Essay Writer')" style="--tool-color:#0f766e;--tool-grad:linear-gradient(135deg,#0f766e,#0d9488)">
+              <span class="bd-tool-badge">Soon</span>
+              <div class="bd-tool-icon"><i class="bi bi-pencil-square"></i></div>
+              <div class="bd-tool-name">Essay Writer</div>
+              <div class="bd-tool-desc">AI-assisted essay drafting with smart structure</div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- "Coming Soon" toast notification -->
+      <div id="bdComingSoonToast">
+        <span class="bd-toast-icon">🚀</span>
+        <span id="bdComingSoonToastMsg">Coming soon!</span>
+      </div>
 
     </main>
 
@@ -376,20 +470,53 @@
 <script src="js/shortcuts.js"></script>
 <script src="js/pomodoro.js"></script>
 <script>
+// ── Coming Soon toast ──────────────────────
+function bdShowComingSoon(toolName) {
+  const toast = document.getElementById('bdComingSoonToast');
+  const msg   = document.getElementById('bdComingSoonToastMsg');
+  if (!toast) return;
+  if (msg) msg.textContent = `${toolName} is coming soon — stay tuned! 🎉`;
+  toast.classList.add('show');
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+// ── Show upload flow (for "Upload & Generate" tool card) ──
+function showUploadFlow() {
+  const toolsSection  = document.getElementById('toolsSection');
+  const heroSection   = document.getElementById('heroSection');
+  const uploadSection = document.getElementById('uploadSection');
+  const howSection    = document.getElementById('howSection');
+  if (toolsSection)  toolsSection.style.display = 'none';
+  if (heroSection)   heroSection.style.display  = 'block';
+  if (uploadSection) uploadSection.style.display = 'block';
+  if (howSection)    howSection.style.display    = 'block';
+  uploadSection?.scrollIntoView({ behavior: 'smooth' });
+}
+
 (async () => {
   let user = BrainDeckAuth.getToken() ? await BrainDeckAuth.getCurrentUser() : null;
   if (!user) user = await BrainDeckAuth.tryRefresh();
 
-  const authCta     = document.getElementById('authCta');
-  const authWelcome = document.getElementById('authWelcome');
-  const heroSubtitle= document.getElementById('heroSubtitle');
-  const topbarAvatar= document.getElementById('topbarAvatar');
-  const topbarName  = document.getElementById('topbarName');
+  const authCta        = document.getElementById('authCta');
+  const authWelcome    = document.getElementById('authWelcome');
+  const heroSubtitle   = document.getElementById('heroSubtitle');
+  const topbarAvatar   = document.getElementById('topbarAvatar');
+  const topbarName     = document.getElementById('topbarName');
   const topbarDropName = document.getElementById('topbarDropName');
   const topbarDropEmail= document.getElementById('topbarDropEmail');
-  const welcomeName = document.getElementById('welcomeName');
-  const welcomeAvatar= document.getElementById('welcomeAvatar');
-  const welcomeDecks = document.getElementById('welcomeDecks');
+  const welcomeName    = document.getElementById('welcomeName');
+  const welcomeAvatar  = document.getElementById('welcomeAvatar');
+  const welcomeDecks   = document.getElementById('welcomeDecks');
+
+  // ── Section refs ──
+  const heroSection    = document.getElementById('heroSection');
+  const uploadSection  = document.getElementById('uploadSection');
+  const howSection     = document.getElementById('howSection');
+  const toolsSection   = document.getElementById('toolsSection');
+  const toolsAvatar    = document.getElementById('toolsAvatar');
+  const toolsTitle     = document.getElementById('toolsWelcomeTitle');
+  const toolsSub       = document.getElementById('toolsWelcomeSub');
 
   document.getElementById('sidebarLogout')?.addEventListener('click', () => BrainDeckAuth.logout());
   document.getElementById('topbarLogout')?.addEventListener('click',  () => BrainDeckAuth.logout());
@@ -401,25 +528,45 @@
       ? `<img src="${user.avatarUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover" onerror="this.parentElement.textContent='${initials}'">`
       : initials;
 
+    // ── Hide guest/upload sections, show tools ──
+    if (heroSection)   heroSection.style.display   = 'none';
+    if (uploadSection) uploadSection.style.display = 'none';
+    if (howSection)    howSection.style.display    = 'none';
+    if (toolsSection)  toolsSection.style.display  = 'block';
+
+    // ── Tools welcome banner ──
+    if (toolsAvatar) toolsAvatar.innerHTML = avatarHtml;
+    if (toolsTitle)  toolsTitle.textContent = `Welcome back, ${firstName}!`;
+
+    // ── Topbar ──
     authCta?.classList.add('d-none');
     authWelcome?.classList.remove('d-none');
-    if (heroSubtitle) heroSubtitle.textContent = `Good to see you, ${firstName}! Upload a document to generate new study cards.`;
-    if (topbarAvatar) topbarAvatar.innerHTML = avatarHtml;
-    if (topbarName)   topbarName.textContent = firstName;
-    if (topbarDropName)  topbarDropName.textContent = user.name || firstName;
+    if (heroSubtitle)    heroSubtitle.textContent    = `Good to see you, ${firstName}!`;
+    if (topbarAvatar)    topbarAvatar.innerHTML      = avatarHtml;
+    if (topbarName)      topbarName.textContent      = firstName;
+    if (topbarDropName)  topbarDropName.textContent  = user.name || firstName;
     if (topbarDropEmail) topbarDropEmail.textContent = user.email || '';
-    if (welcomeName)  welcomeName.textContent = `Welcome back, ${firstName}!`;
-    if (welcomeAvatar) welcomeAvatar.innerHTML = avatarHtml;
+    if (welcomeName)     welcomeName.textContent     = `Welcome back, ${firstName}!`;
+    if (welcomeAvatar)   welcomeAvatar.innerHTML     = avatarHtml;
 
+    // ── Deck count in sub-title ──
     try {
       const r = await fetch('/api/decks', { headers: BrainDeckAuth.getHeaders(), credentials:'include' });
       const d = await r.json();
-      if (d.success && welcomeDecks) {
+      if (d.success) {
         const c = d.data.decks?.length || 0;
-        welcomeDecks.textContent = c > 0 ? `${c} deck${c!==1?'s':''} saved` : 'No decks yet — upload one!';
+        if (toolsSub) toolsSub.textContent = c > 0
+          ? `You have ${c} saved deck${c!==1?'s':''} — keep it up! 🔥`
+          : 'No decks yet — generate your first one below!';
+        if (welcomeDecks) welcomeDecks.textContent = c > 0 ? `${c} deck${c!==1?'s':''} saved` : 'No decks yet — upload one!';
       }
     } catch {}
   } else {
+    // ── Guest: show upload flow, hide tools ──
+    if (heroSection)   heroSection.style.display   = 'block';
+    if (uploadSection) uploadSection.style.display = 'block';
+    if (howSection)    howSection.style.display    = 'block';
+    if (toolsSection)  toolsSection.style.display  = 'none';
     authCta?.classList.remove('d-none');
     authWelcome?.classList.add('d-none');
   }

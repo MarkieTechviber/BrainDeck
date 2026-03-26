@@ -1,30 +1,24 @@
 // server/controllers/userController.js
-const User    = require('../models/User');
-const Profile = require('../models/Profile');
-const Deck    = require('../models/Deck');
+const { User, Profile, Deck } = require('../models/index');
 const { sendSuccess, sendError } = require('../utils/responseUtils');
 
 // ── GET MY PROFILE ────────────────────────────────────────
 const getMe = async (req, res, next) => {
   try {
-    const user    = await User.findById(req.userId);
-    const profile = await Profile.findOne({ userId: req.userId });
+    const user    = await User.findByPk(req.userId);
+    const profile = await Profile.findOne({ where: { userId: req.userId } });
 
     if (!user) return sendError(res, 'User not found.', 404);
-
-    // Mask stored API keys — just return which providers have keys
-    const savedProviders = profile ? [...(profile.encryptedApiKeys || new Map()).keys()] : [];
 
     return sendSuccess(res, {
       user: user.toJSON(),
       profile: {
-        preferredAIMode:     profile?.preferredAIMode     || 'local',
-        preferredProvider:   profile?.preferredProvider   || 'claude',
-        preferredModel:      profile?.preferredModel      || '',
-        preferredOllamaModel:profile?.preferredOllamaModel|| 'llama3',
-        savedProviders,
-        totalDecks:          profile?.totalDecks          || 0,
-        lastStudiedAt:       profile?.lastStudiedAt       || null,
+        preferredAIMode:      profile?.preferredAIMode      || 'local',
+        preferredProvider:    profile?.preferredProvider    || 'claude',
+        preferredModel:       profile?.preferredModel       || '',
+        preferredOllamaModel: profile?.preferredOllamaModel || 'llama3',
+        totalDecks:           profile?.totalDecks           || 0,
+        lastStudiedAt:        profile?.lastStudiedAt        || null,
       },
     });
   } catch (error) {
@@ -37,7 +31,7 @@ const updateMe = async (req, res, next) => {
   try {
     const { name, avatarUrl, coverUrl, bio, location, website,
             preferredAIMode, preferredProvider, preferredModel,
-            preferredOllamaModel, apiKey, apiKeyProvider } = req.body;
+            preferredOllamaModel } = req.body;
 
     const user    = await User.findByPk(req.userId);
     const profile = await Profile.findOne({ where: { userId: req.userId } });
@@ -54,34 +48,16 @@ const updateMe = async (req, res, next) => {
     await user.save();
 
     // Update profile fields
-    if (preferredAIMode     !== undefined) profile.preferredAIMode      = preferredAIMode;
-    if (preferredProvider   !== undefined) profile.preferredProvider     = preferredProvider;
-    if (preferredModel      !== undefined) profile.preferredModel        = preferredModel;
-    if (preferredOllamaModel!== undefined) profile.preferredOllamaModel  = preferredOllamaModel;
-
-    // Store API key encrypted if provided
-    if (apiKey && apiKeyProvider) {
-      profile.setApiKey(apiKeyProvider, apiKey);
-    }
+    if (preferredAIMode      !== undefined) profile.preferredAIMode      = preferredAIMode;
+    if (preferredProvider    !== undefined) profile.preferredProvider     = preferredProvider;
+    if (preferredModel       !== undefined) profile.preferredModel        = preferredModel;
+    if (preferredOllamaModel !== undefined) profile.preferredOllamaModel  = preferredOllamaModel;
 
     await profile.save();
 
     // Apply AI settings to runtime globals
-    if (preferredAIMode) {
-      global.aiModeOverride = preferredAIMode;
-    }
-    if (preferredProvider || apiKey) {
-      const allKeys = profile.getAllApiKeys();
-      global.cloudProviderState = {
-        provider:  preferredProvider || global.cloudProviderState?.provider || 'claude',
-        apiKey:    allKeys[preferredProvider || global.cloudProviderState?.provider] || '',
-        model:     preferredModel || global.cloudProviderState?.model || '',
-        customUrl: global.cloudProviderState?.customUrl || '',
-      };
-    }
-    if (preferredOllamaModel) {
-      global.ollamaModelOverride = preferredOllamaModel;
-    }
+    if (preferredAIMode)   global.aiModeOverride      = preferredAIMode;
+    if (preferredModel)    global.ollamaModelOverride  = preferredOllamaModel || preferredModel;
 
     return sendSuccess(res, { user: user.toJSON() }, 'Profile updated successfully.');
   } catch (error) {
@@ -101,11 +77,13 @@ const changePassword = async (req, res, next) => {
       return sendError(res, 'New password must be at least 8 characters.', 400);
     }
 
-    const user = await User.findById(req.userId);
+    const user = await User.findByPk(req.userId);
+    if (!user) return sendError(res, 'User not found.', 404);
+
     const valid = await user.comparePassword(currentPassword);
     if (!valid) return sendError(res, 'Current password is incorrect.', 401);
 
-    user.passwordHash = newPassword; // pre-save hook hashes
+    user.passwordHash = newPassword; // pre-save hook hashes it
     await user.save();
 
     return sendSuccess(res, null, 'Password changed successfully.');
@@ -119,16 +97,15 @@ const getDecks = async (req, res, next) => {
   try {
     const page  = parseInt(req.query.page)  || 1;
     const limit = parseInt(req.query.limit) || 20;
-    const skip  = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    const [decks, total] = await Promise.all([
-      Deck.find({ userId: req.userId })
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limit)
-          .select('-cards'), // Don't return full card data in list
-      Deck.countDocuments({ userId: req.userId }),
-    ]);
+    const { rows: decks, count: total } = await Deck.findAndCountAll({
+      where:      { userId: req.userId },
+      order:      [['createdAt', 'DESC']],
+      limit,
+      offset,
+      attributes: { exclude: ['cards'] }, // Don't return full card data in list
+    });
 
     return sendSuccess(res, {
       decks,
@@ -142,7 +119,7 @@ const getDecks = async (req, res, next) => {
 // ── GET SINGLE DECK (with cards) ─────────────────────────
 const getDeck = async (req, res, next) => {
   try {
-    const deck = await Deck.findOne({ _id: req.params.id, userId: req.userId });
+    const deck = await Deck.findOne({ where: { id: req.params.id, userId: req.userId } });
     if (!deck) return sendError(res, 'Deck not found.', 404);
 
     // Update last studied
@@ -177,10 +154,7 @@ const saveDeck = async (req, res, next) => {
     });
 
     // Increment total decks in profile
-    await Profile.findOneAndUpdate(
-      { userId: req.userId },
-      { $inc: { totalDecks: 1 } }
-    );
+    await Profile.increment('totalDecks', { where: { userId: req.userId } });
 
     return sendSuccess(res, { deck }, 'Deck saved successfully.', 201);
   } catch (error) {
@@ -191,13 +165,12 @@ const saveDeck = async (req, res, next) => {
 // ── DELETE DECK ───────────────────────────────────────────
 const deleteDeck = async (req, res, next) => {
   try {
-    const deck = await Deck.findOneAndDelete({ _id: req.params.id, userId: req.userId });
+    const deck = await Deck.findOne({ where: { id: req.params.id, userId: req.userId } });
     if (!deck) return sendError(res, 'Deck not found.', 404);
 
-    await Profile.findOneAndUpdate(
-      { userId: req.userId },
-      { $inc: { totalDecks: -1 } }
-    );
+    await deck.destroy();
+
+    await Profile.decrement('totalDecks', { where: { userId: req.userId } });
 
     return sendSuccess(res, null, 'Deck deleted.');
   } catch (error) {
@@ -209,17 +182,15 @@ const deleteDeck = async (req, res, next) => {
 const deleteAccount = async (req, res, next) => {
   try {
     const { password } = req.body;
-    const user = await User.findById(req.userId);
+    const user = await User.findByPk(req.userId);
     if (!user) return sendError(res, 'User not found.', 404);
 
     const valid = await user.comparePassword(password);
     if (!valid) return sendError(res, 'Incorrect password.', 401);
 
-    await Promise.all([
-      User.deleteOne({ _id: req.userId }),
-      Profile.deleteOne({ userId: req.userId }),
-      Deck.deleteMany({ userId: req.userId }),
-    ]);
+    await Deck.destroy({ where: { userId: req.userId } });
+    await Profile.destroy({ where: { userId: req.userId } });
+    await User.destroy({ where: { id: req.userId } });
 
     res.clearCookie('refreshToken', { path: '/api/auth' });
     return sendSuccess(res, null, 'Account deleted.');

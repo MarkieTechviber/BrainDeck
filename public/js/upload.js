@@ -70,7 +70,7 @@
       if (!uploadResult.success) throw new Error(uploadResult.message || 'Upload failed.');
 
       const difficulty = typeof DifficultyTuner !== 'undefined' ? DifficultyTuner.getValue() : 'medium';
-      const diffLabel = typeof DifficultyTuner !== 'undefined' ? DifficultyTuner.LEVELS.find(l=>l.value===difficulty)?.label || 'Medium' : 'Medium';
+      const diffLabel  = typeof DifficultyTuner !== 'undefined' ? DifficultyTuner.LEVELS.find(l=>l.value===difficulty)?.label || 'Medium' : 'Medium';
       loadingTitle.textContent    = `AI is generating ${diffLabel} ${cardType} cards...`;
       loadingSubtitle.textContent = 'This may take 10–30 seconds depending on size.';
 
@@ -78,7 +78,7 @@
       const genResult = await BrainDeckAPI.generateCards(uploadResult.data.filePath, cardType, sessionId, difficulty);
       if (!genResult.success) throw new Error(genResult.message || 'Generation failed.');
 
-      // Save to localStorage
+      // Save to localStorage for immediate study
       const session = {
         sessionId:  genResult.data.sessionId,
         cardType,
@@ -91,17 +91,44 @@
       };
       localStorage.setItem('bd_session', JSON.stringify(session));
 
-      // Auto-save deck if logged in
-      const aiState = await fetch('/api/ai-mode').then(r=>r.json()).catch(()=>({}));
+      // ── Save all three card types under the same title & originalFileName ──
+      // They share originalFileName so decks.js can group them into one card.
+      const aiState  = await fetch('/api/ai-mode').then(r=>r.json()).catch(()=>({}));
+      const title    = selectedFile.name.replace(/\.[^.]+$/, ''); // plain basename, no suffix
+      const fileType = ext(selectedFile);
+      const ALL_TYPES = ['flashcard', 'summary', 'quiz'];
+
+      loadingTitle.textContent    = 'Saving your decks...';
+      loadingSubtitle.textContent = 'Generating all 3 card types so everything is ready in your library.';
+
+      // Save the already-generated primary type immediately
       await BrainDeckAPI.saveDeck({
-        title:            selectedFile.name.replace(/\.[^.]+$/,''),
-        originalFileName: selectedFile.name,
-        fileType:         ext(selectedFile),
-        cardType,
-        cards:            genResult.data.cards,
-        aiProvider:       aiState.provider || 'local',
-        aiModel:          aiState.model    || '',
+        title, originalFileName: selectedFile.name, fileType,
+        cardType, cards: genResult.data.cards,
+        aiProvider: aiState.provider || 'local', aiModel: aiState.model || '',
       });
+
+      // Generate + save the other two types using the server-cached session text
+      const otherTypes = ALL_TYPES.filter(t => t !== cardType);
+      await Promise.allSettled(otherTypes.map(async (type) => {
+        try {
+          const token = typeof BrainDeckAuth !== 'undefined' ? BrainDeckAuth.getToken() : null;
+          const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+          const r = await fetch('/api/cards/' + type + '?sessionId=' + encodeURIComponent(session.sessionId) + '&cardType=' + type, {
+            headers, credentials: 'include',
+          });
+          const d = await r.json();
+          if (d.success && d.data.cards?.length) {
+            await BrainDeckAPI.saveDeck({
+              title, originalFileName: selectedFile.name, fileType,
+              cardType: type, cards: d.data.cards,
+              aiProvider: aiState.provider || 'local', aiModel: aiState.model || '',
+            });
+          }
+        } catch (e) {
+          console.warn('[Upload] Could not save ' + type + ' deck:', e.message);
+        }
+      }));
 
       loadingModal.hide();
       const pages = { flashcard:'flashcard.html', summary:'summary.html', quiz:'quiz.html' };

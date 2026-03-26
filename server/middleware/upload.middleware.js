@@ -1,31 +1,39 @@
 // server/middleware/upload.middleware.js
+// Handles document uploads (PDF, DOCX, PPTX, TXT, MD).
+// Each upload gets its own randomized session folder under uploads/documents/.
+
 const multer = require('multer');
-const path = require('path');
-const uploadConfig = require('../config/upload.config');
+const path   = require('path');
+const uploadConfig  = require('../config/upload.config');
+const { generateFileName, ensureDir, newDocumentDir } = require('../utils/storageHelper');
+
+// Ensure the documents root exists on startup
+ensureDir(uploadConfig.documentsDir);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadConfig.uploadDir);
+    // Fresh randomized session folder per upload
+    const { folderPath } = newDocumentDir();
+    req._documentFolderPath = folderPath; // expose to controller if needed
+    cb(null, folderPath);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `upload-${uniqueSuffix}${ext}`);
+    const ext      = path.extname(file.originalname).toLowerCase();
+    const randName = generateFileName() + ext;
+    cb(null, randName);
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  const ext = path.extname(file.originalname).toLowerCase().replace('.', '');
-  const isMimeAllowed = uploadConfig.allowedMimeTypes.includes(file.mimetype);
-  const isExtAllowed = uploadConfig.allowedExtensions.includes(ext);
+  const ext         = path.extname(file.originalname).toLowerCase().replace('.', '');
+  const isMimeOk    = uploadConfig.allowedMimeTypes.includes(file.mimetype);
+  const isExtOk     = uploadConfig.allowedExtensions.includes(ext);
 
-  if (isMimeAllowed && isExtAllowed) {
+  if (isMimeOk && isExtOk) {
     cb(null, true);
   } else {
     cb(
-      new Error(
-        `File type not supported. Allowed types: ${uploadConfig.allowedExtensions.join(', ')}`
-      ),
+      new Error(`File type not supported. Allowed: ${uploadConfig.allowedExtensions.join(', ')}`),
       false
     );
   }
@@ -33,9 +41,7 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
   storage,
-  limits: {
-    fileSize: uploadConfig.maxFileSizeBytes,
-  },
+  limits:     { fileSize: uploadConfig.maxFileSizeBytes },
   fileFilter,
 });
 

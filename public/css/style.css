@@ -502,3 +502,204 @@ body.bd-focus-mode main { padding-top: 3rem !important; }
   border-color: rgba(108,99,255,0.15) !important;
 }
 .dropdown-toggle::after { display: none; }
+
+/* ══════════════════════════════════════════
+   BrainDeck — Tools Dashboard (Logged-in Home)
+   ══════════════════════════════════════════ */
+
+/* ── Tools section wrapper ── */
+#toolsSection { display: none; }
+
+/* ── Welcome banner ── */
+.bd-tools-welcome {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  box-shadow: 0 8px 32px rgba(108,99,255,0.10), var(--neu-shadow-sm);
+}
+.bd-tools-welcome-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--grad-primary);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 4px 4px 12px rgba(108,99,255,0.4);
+}
+.bd-tools-welcome-text .bd-tools-welcome-title {
+  font-size: 1.15rem; font-weight: 800; color: var(--text); margin-bottom: .1rem;
+}
+.bd-tools-welcome-text .bd-tools-welcome-sub {
+  font-size: .82rem; color: var(--text-muted); font-weight: 500;
+}
+.bd-tools-welcome-actions { margin-left: auto; display: flex; gap: .6rem; flex-wrap: wrap; }
+
+/* ── Section heading ── */
+.bd-tools-heading {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  padding-left: .25rem;
+}
+
+/* ── Tools grid ── */
+.bd-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* ── Individual tool card ── */
+.bd-tool-card {
+  background: var(--surface);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neu-shadow);
+  padding: 1.5rem 1.25rem 1.35rem;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .6rem;
+  user-select: none;
+}
+.bd-tool-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--tool-grad, var(--grad-primary));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  border-radius: inherit;
+  z-index: 0;
+}
+.bd-tool-card:hover {
+  box-shadow: var(--neu-hover);
+  border-color: var(--tool-color, var(--primary));
+  transform: translateY(-3px);
+}
+.bd-tool-card:hover::before { opacity: 0.06; }
+.bd-tool-card:active { transform: translateY(0); box-shadow: var(--neu-pressed); }
+
+/* ── Tool icon bubble ── */
+.bd-tool-icon {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  background: var(--tool-grad, var(--grad-primary));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+  box-shadow: 3px 3px 10px rgba(0,0,0,0.12);
+  flex-shrink: 0;
+  position: relative; z-index: 1;
+  transition: var(--transition);
+}
+.bd-tool-card:hover .bd-tool-icon {
+  transform: scale(1.08);
+  box-shadow: 4px 4px 16px rgba(0,0,0,0.18);
+}
+.bd-tool-name {
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--text);
+  position: relative; z-index: 1;
+  line-height: 1.3;
+}
+.bd-tool-desc {
+  font-size: .73rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  position: relative; z-index: 1;
+}
+
+/* ── "Coming Soon" badge on card ── */
+.bd-tool-badge {
+  position: absolute;
+  top: .65rem; right: .65rem;
+  background: var(--grad-primary);
+  color: #fff;
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: .2rem .5rem;
+  border-radius: 50px;
+  z-index: 2;
+}
+
+/* ── "Coming Soon" toast ── */
+#bdComingSoonToast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--neu-shadow), 0 0 0 2px rgba(108,99,255,0.12);
+  padding: .85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--text);
+  z-index: 9999;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+#bdComingSoonToast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+#bdComingSoonToast .bd-toast-icon {
+  font-size: 1.2rem;
+}
+
+/* ── Dark mode adjustments ── */
+[data-theme="dark"] .bd-tool-card {
+  background: var(--surface);
+}
+[data-theme="dark"] .bd-tools-welcome {
+  background: var(--glass-bg);
+}
+
+/* ── Responsive ── */
+@media (max-width: 576px) {
+  .bd-tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .bd-tools-welcome {
+    padding: 1.25rem 1rem;
+  }
+  .bd-tools-welcome-actions { width: 100%; justify-content: flex-end; }
+}
+@media (min-width: 768px) {
+  .bd-tools-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (min-width: 1100px) {
+  .bd-tools-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

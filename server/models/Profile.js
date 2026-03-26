@@ -13,11 +13,26 @@ const Profile = sequelize.define('Profile', {
     allowNull: false,
     unique: true,
   },
+  // Legacy column — kept for backward compat
   preferredAI: {
     type: DataTypes.STRING(50),
     defaultValue: 'local',
   },
+  // AI mode: 'local' | 'cloud'
+  preferredAIMode: {
+    type: DataTypes.STRING(50),
+    defaultValue: 'local',
+  },
+  // Cloud provider: 'claude' | 'openai' | 'gemini' | etc.
+  preferredProvider: {
+    type: DataTypes.STRING(50),
+    defaultValue: 'claude',
+  },
   preferredModel: {
+    type: DataTypes.STRING(100),
+    defaultValue: 'llama3',
+  },
+  preferredOllamaModel: {
     type: DataTypes.STRING(100),
     defaultValue: 'llama3',
   },
@@ -27,6 +42,11 @@ const Profile = sequelize.define('Profile', {
   },
   lastStudiedAt: {
     type: DataTypes.DATE,
+    allowNull: true,
+  },
+  // Randomized upload folder name e.g. F22ARCYA-H32NFE8K
+  storageFolder: {
+    type: DataTypes.STRING(50),
     allowNull: true,
   },
 }, { tableName: 'profiles' });
