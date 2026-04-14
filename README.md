@@ -368,10 +368,12 @@ Found a bug? Have a feature idea?
 
 ## Acknowledgments
 
-Built with ❤️ for learners everywhere. Special thanks to:
+Development was assisted by AI tools including Claude AI, Cursor, and ChatGPT. See [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md) for the full note.
+
+Built with appreciation for the open-source projects that make BrainDeck possible:
 - The Ollama team for free local AI
 - The spaced repetition community (SM-2 algorithm)
-- Bootstrap & open-source contributors
+- Bootstrap and other open-source contributors
 
 ---
 
